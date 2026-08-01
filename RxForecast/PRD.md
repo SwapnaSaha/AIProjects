@@ -1,7 +1,7 @@
 # RxForecast — Product Requirements Document
 
 **Predictive EDI Ordering Agent for Mid-Market Pharmacy Chains**
-Cohort 9 — PRD for AI Products (source: 5 weekly PRD docs, treated as one PRD)
+ PRD for AI Products 
 
 > Build plan and execution roadmap: see `plan.md` in this same folder.
 
