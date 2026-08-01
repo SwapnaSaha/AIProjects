@@ -3,8 +3,6 @@
 **Predictive EDI Ordering Agent for Mid-Market Pharmacy Chains**
 Cohort 9 — PRD for AI Products (source: 5 weekly PRD docs, treated as one PRD)
 
-> **Note on this version:** content is unchanged from the original 5-week PRD. It's reorganized here under the standard checklist: Problem, User, Core Metric, MVP Features, Constraints, Grounding Strategy, Hallucination Guardrails, Evaluation Strategy, Production Readiness. Two sections are **renamed** for clarity (no content lost): *Prompt Strategy + Knowledge Base* → **Grounding Strategy**; *Launch Plan + Go-live Criteria* → **Production Readiness**. One section is **new**: **Constraints**, consolidating statements that were previously scattered across Target Market, Model Requirements, and Responsible AI. Supplementary material that doesn't map to the checklist (risk register, tech stack, market sizing, full Responsible AI detail) is preserved in the Appendix rather than dropped.
->
 > Build plan and execution roadmap: see `plan.md` in this same folder.
 
 ---
