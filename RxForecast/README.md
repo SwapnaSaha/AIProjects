@@ -1,6 +1,6 @@
 # RxForecast
 
-Predictive EDI ordering agent for mid-market pharmacy chains — Cohort 9 AI Product Management course project.
+Predictive EDI ordering agent for mid-market pharmacy chains — AI Product Management project.
 
 ## Docs, in reading order
 
