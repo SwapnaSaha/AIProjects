@@ -449,4 +449,3 @@ Plus a **$50K one-time implementation fee** (waived for early design-partner cus
 
 ---
 
-*Reorganized from `PRD_ForecastRx.docx` (Week 1), `Week2_PRD.docx` (Week 2), `RxForecast_Week3_PRD.docx` (Week 3), `PRD_Week4_RxForecast.docx` (Week 4), and `PRD_Week5_RxForecast.docx` (Week 5) — Cohort 9, PRD for AI Products.*
