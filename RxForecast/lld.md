@@ -490,6 +490,26 @@ Since everything now runs in the same Azure subscription, this is simpler than a
 
 **Cost note:** `PRD.md` Appendix B priced Claude usage against Anthropic's direct API rates. Azure AI Foundry's Claude pricing may carry a small platform premium, may match it exactly, or may differ by deployment type (pay-as-you-go vs. provisioned throughput) — **this needs a confirmed number from Azure's current pricing page at build time**, not an assumed match.
 
+### 4.6 Agentic vs. deterministic — stage by stage (added 2026-08-01)
+
+A recurring question when explaining this pipeline to a non-engineering audience: which stages are genuinely "AI" and which are ordinary code that happens to sit in an AI pipeline. Answered explicitly, stage by stage, since §4.3's node graph only encodes this implicitly via which nodes call a Claude deployment:
+
+| Stage | Agentic or deterministic | How (if deterministic) / why (if agentic) |
+|---|---|---|
+| Data Ingestion | Deterministic | Scheduled pull-and-normalize job. Same feeds in, same structured dataset out, every time. |
+| 1 · Demand Forecaster | Deterministic (ML) | A trained forecasting model (LightGBM) applied to historical numbers. Same history → same forecast; no judgment call. |
+| 2 · Shortage Watcher | **Agentic** | FDA/ASHP bulletins are free text, worded differently every time — extraction requires an LLM; a fixed rule set can't keep up with the phrasing (this is the PRD's own "Why Agentic AI?" argument, reason 1). |
+| 3 · Inventory Reconciler | Deterministic | Arithmetic: forecast minus on-hand minus in-transit, checked against the reorder-point threshold. |
+| 4 · Substitution Reasoner | **Agentic** | Weighs several independent, sometimes conflicting factors at once (TE match, payer coverage, 340B eligibility, contract availability) — a combinatorial judgment call the PRD explicitly argues rules can't enumerate (reason 2). The DEA Schedule II hard-block *inside* this stage is the one part that's always deterministic regardless — see §4.5's safety-rule note above; that logic is never delegated to the model. |
+| 5 · Sourcing Optimizer | Deterministic | Cost/lead-time/allocation comparison across a known, finite distributor list — picks whichever satisfies constraints at lowest cost. |
+| 6 · PO Drafter | Deterministic | Assembles the order and runs the 2-sigma statistical check against trailing 30-day order history — templating and arithmetic. |
+| Buyer Review (human gate) | Neither — human decision | Not an agent. A person approves, edits, bulk-approves, or rejects; deliberately never automated. |
+| 7 · EDI Transmission | Deterministic | Formats the approved order into the X12 850 segment structure, assigns the next control number — a protocol/templating task. |
+| 8 · Exception Handler | Deterministic | Fixed state machine keyed on the 855 status code (accepted/backordered/partial); routes to a replan only on the backorder branch. |
+| Explainability Layer | Deterministic | A wrapper (`@with_citations`, §4.3) that mechanically attaches whatever citation each stage already produced — it generates no judgment of its own. |
+
+Net: **2 of the 11 stages are genuinely agentic**; the other 9 are ordinary deterministic code that happens to run inside an agent pipeline. This isn't a shortcut — it's the PRD's own design principle (§1 "Why Agentic AI?"): reach for a model only where the task structurally requires it (unstructured extraction, multi-factor combinatorial reasoning), and use cheaper, faster, more predictable deterministic logic everywhere else. It's also why a probabilistic model is never in the path of the one rule that must never have exceptions (Schedule II).
+
 ---
 
 ## 5. EDI Integration Layer

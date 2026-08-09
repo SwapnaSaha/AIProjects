@@ -116,6 +116,8 @@ At the store level. Consumes order outcomes (what arrives on the truck) and flag
 8. **Exception Handler** — monitors 855 ack; on backorder or partial allocation, replans
 9. **Explainability Layer** — cross-cutting; attaches source citations to every output
 
+*(Note, added 2026-08-01: only components 3 and 5 above — Shortage Watcher and Substitution Reasoner — are genuinely agentic/LLM-based; the other 7 are deterministic code, per this section's own descriptions (LightGBM, arithmetic reconciliation, EDI templating). Full stage-by-stage "agentic vs. deterministic, and why" breakdown: `lld.md` §4.6.)*
+
 **Output:** a ranked daily decision queue for the buyer + a transmitted EDI 850 to the chosen distributor (after buyer approval) + an audit trail.
 
 ### Required features (V1 MVP)

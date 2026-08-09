@@ -1,0 +1,922 @@
+<title>RxForecast — How It Works</title>
+<style>
+  :root {
+    --bg: #EEF0F0;
+    --surface: #FFFFFF;
+    --surface-tint: #F5F6F6;
+    --ink: #14181C;
+    --ink-soft: #4A535C;
+    --ink-faint: #6E7780;
+    --line: #D7DCE0;
+    --line-strong: #B9C1C7;
+    --accent: #C1750A;
+    --accent-ink: #7A4A06;
+    --accent-tint: #F3E2C4;
+    --cat-ml: #3F6788;
+    --cat-llm: #C1750A;
+    --cat-human: #3F7D53;
+    --cat-system: #6B7480;
+    --ok: #3F7D53;
+    --ok-tint: #DEEBE1;
+    --pending: #6B7480;
+    --pending-tint: #E4E6E8;
+    --font-head: "Arial Narrow", "Roboto Condensed", "Helvetica Neue", Arial, sans-serif;
+    --font-body: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --font-mono: Consolas, "SF Mono", "Cascadia Mono", "Roboto Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14181C;
+      --surface: #1B2126;
+      --surface-tint: #20272C;
+      --ink: #EDEFEF;
+      --ink-soft: #ABB4BC;
+      --ink-faint: #757F87;
+      --line: #2C343A;
+      --line-strong: #3A434A;
+      --accent: #E6A23C;
+      --accent-ink: #F2C482;
+      --accent-tint: #3A2E17;
+      --cat-ml: #7FA8CC;
+      --cat-llm: #E6A23C;
+      --cat-human: #7FBE90;
+      --cat-system: #9BA4AC;
+      --ok: #7FBE90;
+      --ok-tint: #23322A;
+      --pending: #9BA4AC;
+      --pending-tint: #262C31;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14181C; --surface: #1B2126; --surface-tint: #20272C;
+    --ink: #EDEFEF; --ink-soft: #ABB4BC; --ink-faint: #757F87;
+    --line: #2C343A; --line-strong: #3A434A;
+    --accent: #E6A23C; --accent-ink: #F2C482; --accent-tint: #3A2E17;
+    --cat-ml: #7FA8CC; --cat-llm: #E6A23C; --cat-human: #7FBE90; --cat-system: #9BA4AC;
+    --ok: #7FBE90; --ok-tint: #23322A; --pending: #9BA4AC; --pending-tint: #262C31;
+  }
+  :root[data-theme="light"] {
+    --bg: #EEF0F0; --surface: #FFFFFF; --surface-tint: #F5F6F6;
+    --ink: #14181C; --ink-soft: #4A535C; --ink-faint: #8A929A;
+    --line: #D7DCE0; --line-strong: #B9C1C7;
+    --accent: #C1750A; --accent-ink: #7A4A06; --accent-tint: #F3E2C4;
+    --cat-ml: #3F6788; --cat-llm: #C1750A; --cat-human: #3F7D53; --cat-system: #6B7480;
+    --ok: #3F7D53; --ok-tint: #DEEBE1; --pending: #6B7480; --pending-tint: #E4E6E8;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+
+  /* ---- Masthead ---- */
+  .eyebrow {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    margin: 0 0 0.6rem;
+  }
+  h1.title {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 2.6rem;
+    letter-spacing: 0.01em;
+    margin: 0 0 0.5rem;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  .subtitle {
+    font-family: var(--font-body);
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 1.18rem;
+    max-width: 62ch;
+    margin: 0 0 1.6rem;
+    text-wrap: balance;
+  }
+  .masthead-rule {
+    border: 0;
+    border-top: 3px solid var(--accent);
+    width: 3.4rem;
+    margin: 0 0 2.6rem;
+  }
+
+  /* ---- Section heads ---- */
+  h2.section {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.92rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 3.2rem 0 1.1rem;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid var(--line-strong);
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+  h2.section:first-of-type { margin-top: 0; }
+  h2.section .num {
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  p { margin: 0 0 1rem; max-width: 68ch; color: var(--ink); }
+  .lede { font-size: 1.08rem; }
+
+  /* ---- Overview ---- */
+  .overview p:last-child { margin-bottom: 0; }
+
+  /* ---- Data table ---- */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 3px; }
+  table.data {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-head);
+    font-size: 0.86rem;
+    min-width: 640px;
+  }
+  table.data thead th {
+    text-align: left;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    background: var(--surface-tint);
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--line-strong);
+    white-space: nowrap;
+  }
+  table.data tbody td {
+    padding: 0.65rem 0.8rem;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--ink);
+  }
+  table.data tbody tr:last-child td { border-bottom: none; }
+  table.data tbody tr:hover { background: var(--surface-tint); }
+  td.dcat { font-weight: 700; white-space: nowrap; }
+  td.dsrc, td.dfeed { color: var(--ink-soft); }
+  td.dfmt { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-soft); white-space: nowrap; }
+  .data-footnote {
+    font-family: var(--font-head);
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    margin-top: 0.8rem;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--line-strong);
+  }
+
+  /* ---- Pipeline IO detail table ---- */
+  td.pstage { white-space: nowrap; }
+  td.pstage .pname { font-weight: 700; color: var(--ink); display: block; }
+  td.pstage .ptag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: 0.25rem;
+  }
+  td.pstage .ptag .swatch { width: 0.5rem; height: 0.5rem; border-radius: 1px; }
+  ul.io-list { margin: 0; padding-left: 1.05rem; }
+  ul.io-list li { margin-bottom: 0.3rem; }
+  ul.io-list li:last-child { margin-bottom: 0; }
+  td.pout ul.io-list li { color: var(--accent-ink); }
+  td.pin ul.io-list li { color: var(--ink-soft); }
+  td.pout, td.pin { min-width: 220px; }
+
+  td.pmech { min-width: 260px; }
+  .pmech-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.76rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+  .pmech-label .swatch { width: 0.55rem; height: 0.55rem; border-radius: 1px; }
+  .pmech-label.det { color: var(--cat-ml); }
+  .pmech-label.agentic { color: var(--cat-llm); }
+  .pmech-label.human { color: var(--cat-human); }
+  .pmech-how { font-family: var(--font-body); font-size: 0.85rem; color: var(--ink-soft); }
+  .pmech-how strong { color: var(--ink); font-weight: 700; }
+
+  /* ---- Legend ---- */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.1rem 1.6rem;
+    font-family: var(--font-head);
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin: 1.1rem 0 0;
+    padding: 0.85rem 1rem;
+    background: var(--surface-tint);
+    border: 1px solid var(--line);
+    border-radius: 3px 3px 0 0;
+  }
+  .legend-item { display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; }
+  .swatch { width: 0.62rem; height: 0.62rem; border-radius: 1px; flex: none; }
+  .dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; flex: none; display: inline-block; }
+  .dot.filled { background: var(--ok); }
+  .dot.hollow { background: transparent; border: 1.5px solid var(--pending); }
+
+  .legend-note {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin: 0 0 2rem;
+    padding: 0.7rem 0.95rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: none;
+    border-radius: 0 0 3px 3px;
+  }
+  .legend-note strong { color: var(--ink); }
+
+  /* ---- Inline gloss on a jargon tag ---- */
+  .node-gloss {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    margin: 0.35rem 0 0.55rem;
+    padding-left: 0.7rem;
+    border-left: 2px solid var(--line-strong);
+  }
+
+  /* ---- Pipeline diagram ---- */
+  .pipeline-scroll { overflow-x: auto; }
+  .pipeline {
+    position: relative;
+    padding-left: 1.9rem;
+    min-width: 560px;
+  }
+  .pipeline::before {
+    content: "";
+    position: absolute;
+    left: 0.62rem;
+    top: 0.7rem;
+    bottom: 3.2rem;
+    width: 2px;
+    background: var(--line-strong);
+  }
+  .node {
+    position: relative;
+    margin-bottom: 0.85rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--cat-system);
+    border-radius: 3px;
+    padding: 0.75rem 0.95rem 0.8rem;
+  }
+  .node[data-cat="ml"] { border-left-color: var(--cat-ml); }
+  .node[data-cat="llm"] { border-left-color: var(--cat-llm); }
+  .node[data-cat="human"] { border-left-color: var(--cat-human); background: var(--surface-tint); }
+  .node[data-cat="system"] { border-left-color: var(--cat-system); }
+  .node::before {
+    content: "";
+    position: absolute;
+    left: -1.62rem;
+    top: 1.05rem;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1.5px solid var(--pending);
+  }
+  .node[data-status="filled"]::before { background: var(--ok); border-color: var(--ok); }
+  .node.human::before { display: none; }
+
+  .node-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin-bottom: 0.3rem;
+  }
+  .node-name {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 0.98rem;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+  }
+  .node-tag {
+    font-family: var(--font-head);
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+  .node-desc {
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    margin: 0 0 0.55rem;
+    max-width: 60ch;
+  }
+  .io-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+  .io-chip {
+    padding: 0.16rem 0.5rem;
+    border-radius: 2px;
+    background: var(--surface-tint);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  .io-chip.out { color: var(--accent-ink); border-color: var(--accent-tint); background: var(--accent-tint); }
+
+  .node.human .node-name { color: var(--cat-human); }
+
+  .loopback {
+    font-family: var(--font-head);
+    font-size: 0.74rem;
+    color: var(--ink-faint);
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+    border-top: 1px dashed var(--line);
+  }
+
+  .pipeline-output {
+    position: relative;
+    margin-top: 0.4rem;
+    padding: 0.9rem 1rem;
+    background: var(--accent-tint);
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+  }
+  .pipeline-output::before {
+    content: "";
+    position: absolute;
+    left: -1.62rem;
+    top: 1.1rem;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .pipeline-output .node-tag { color: var(--accent-ink); }
+  .pipeline-output .out-list {
+    font-family: var(--font-head);
+    font-size: 0.88rem;
+    color: var(--accent-ink);
+    margin: 0.3rem 0 0;
+  }
+  .pipeline-output .out-list span { font-weight: 700; }
+
+  /* ---- Full application block diagram (Section 05) ---- */
+  .node.layer {
+    padding: 1.05rem 1.25rem 1.15rem;
+  }
+  .node.layer .node-name { font-size: 1.06rem; }
+  .node.layer.external {
+    border-top-style: dashed;
+    border-right-style: dashed;
+    border-bottom-style: dashed;
+    background: var(--surface-tint);
+  }
+  .layer-body {
+    display: flex;
+    gap: 1.4rem 2rem;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-top: 0.35rem;
+  }
+  .layer-main { flex: 1 1 280px; }
+  .layer-main .node-desc { margin-bottom: 0; }
+  .layer-io {
+    flex: 0 1 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+  .layer-io .io-chip { width: fit-content; }
+  .arch-legend {
+    font-family: var(--font-head);
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin: 1.1rem 0 2rem;
+    padding: 0.85rem 1rem;
+    background: var(--surface-tint);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    display: flex;
+    gap: 1.1rem 1.6rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .arch-swatch-solid, .arch-swatch-dashed {
+    display: inline-block;
+    width: 1.1rem;
+    height: 0;
+    border-top: 2px solid var(--ink-faint);
+    margin-right: 0.4rem;
+    vertical-align: middle;
+  }
+  .arch-swatch-dashed { border-top-style: dashed; }
+  .arch-feedback {
+    font-family: var(--font-head);
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin-top: 0.55rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--line);
+    max-width: 62ch;
+  }
+
+  .mermaid-wrap {
+    overflow-x: auto;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 1rem;
+  }
+  .mermaid-wrap pre.mermaid { margin: 0; min-width: 640px; }
+  .mermaid-caption {
+    font-family: var(--font-head);
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin-top: 0.7rem;
+  }
+
+  /* ---- Status callout ---- */
+  .status-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem;
+    margin-top: 1.2rem;
+  }
+  @media (max-width: 600px) { .status-box { grid-template-columns: 1fr; } }
+  .status-col {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 1rem 1.1rem;
+  }
+  .status-col h3 {
+    font-family: var(--font-head);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .status-col.real h3 { color: var(--ok); }
+  .status-col.pending h3 { color: var(--ink-faint); }
+  .status-col ul { margin: 0; padding-left: 1.1rem; }
+  .status-col li { font-size: 0.88rem; color: var(--ink-soft); margin-bottom: 0.4rem; font-family: var(--font-body); }
+  .status-col li:last-child { margin-bottom: 0; }
+
+  footer {
+    margin-top: 3.4rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-head);
+    font-size: 0.74rem;
+    color: var(--ink-faint);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+</style>
+
+<div class="page">
+
+  <p class="eyebrow">Internal Brief — Supply Chain AI</p>
+  <h1 class="title">RxForecast</h1>
+  <p class="subtitle">A predictive EDI ordering agent for pharmacy chains — what it does, what data it runs on, and how the pieces fit together.</p>
+  <hr class="masthead-rule" />
+
+  <h2 class="section"><span class="num">01</span> Overview</h2>
+  <div class="overview">
+    <p class="lede">Mid-market pharmacy chains place 800–2,000+ purchase orders a week to drug wholesalers, still largely governed by static min/max shelf rules. Those rules break under three conditions: demand shocks, drug shortages, and controlled-substance/expiration edge cases — and a buyer ends up spending hours a day on manual exception handling instead of judgment calls. RxForecast replaces the static rule with a pipeline of purpose-built agents that forecast demand, watch for shortages, propose safe substitutes, and draft the actual purchase order — while a human buyer approves, edits, or rejects every single one.</p>
+    <p>It's built as a sequence of narrow, auditable stages rather than one large model call, because the decision itself is a sequence: forecast, reconcile against inventory, reason about a shortage if one exists, choose a distributor, draft the order, then watch for the wholesaler's response. Each stage's output — and the data that justified it — is logged, so a compliance officer can trace any purchase order back to the exact forecast, shortage bulletin, or buyer override that produced it.</p>
+    <p>What exists today is a working prototype, not the production system: real forecasting math, real EDI purchase-order generation, and a real audit trail, running against a synthetic dataset shaped like the real thing. Section 03 lays out exactly which pipeline stages are live logic today versus still spec.</p>
+  </div>
+
+  <h2 class="section"><span class="num">02</span> Data Used &amp; Sources</h2>
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr><th>Data</th><th>Source</th><th>Format</th><th>Feeds</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="dcat">Dispense history</td><td class="dsrc">Chain's pharmacy system (de-identified)</td><td class="dfmt">NCPDP 837 aggregates</td><td class="dfeed">Demand Forecaster</td></tr>
+        <tr><td class="dcat">Inventory position</td><td class="dsrc">Distributor inventory feed + chain system</td><td class="dfmt">EDI 846</td><td class="dfeed">Inventory Reconciler</td></tr>
+        <tr><td class="dcat">Drug shortages</td><td class="dsrc">FDA Drug Shortage List, ASHP bulletins</td><td class="dfmt">Free text, polled 4hrs / daily</td><td class="dfeed">Shortage Watcher</td></tr>
+        <tr><td class="dcat">Drug reference</td><td class="dsrc">FDA NDC Directory, Orange Book, RxNorm, DEA schedules</td><td class="dfmt">Structured knowledge base</td><td class="dfeed">Substitution Reasoner</td></tr>
+        <tr><td class="dcat">Contracts &amp; pricing</td><td class="dsrc">Chain's GPO / 340B / direct agreements</td><td class="dfmt">Customer-provided price sheets</td><td class="dfeed">Sourcing Optimizer</td></tr>
+        <tr><td class="dcat">Order lifecycle</td><td class="dsrc">Wholesaler EDI transactions</td><td class="dfmt">X12 850 / 855 / 856</td><td class="dfeed">PO Drafter, Exception Handler</td></tr>
+        <tr><td class="dcat">Buyer decisions</td><td class="dsrc">Logged in-app: approve / edit / reject / override</td><td class="dfmt">Structured event log</td><td class="dfeed">Explainability &amp; learning loop</td></tr>
+        <tr><td class="dcat">Compliance record</td><td class="dsrc">Every recommendation + its citations + the actor</td><td class="dfmt">Append-only audit log</td><td class="dfeed">Compliance Officer view</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="data-footnote">Today's prototype runs this exact structure against a <strong>synthetic dataset</strong> — 12 stores, 60 NDCs, ~150 days of dispense history, generated to mirror real EDI and dispense formats — not a live chain's data.</p>
+
+  <h2 class="section"><span class="num">03</span> System Architecture — The Agent Pipeline</h2>
+  <p>Nine stages, executed nightly (plus on-demand for urgent shortages), each reading specific inputs and handing a specific output to the next stage. One human checkpoint sits in the middle — nothing reaches a wholesaler without buyer sign-off.</p>
+
+  <div class="legend">
+    <span class="legend-item"><span class="swatch" style="background:var(--cat-ml)"></span>Deterministic / ML</span>
+    <span class="legend-item"><span class="swatch" style="background:var(--cat-llm)"></span>AI reasoning (LLM)</span>
+    <span class="legend-item"><span class="swatch" style="background:var(--cat-human)"></span>Human-in-the-loop</span>
+    <span class="legend-item"><span class="swatch" style="background:var(--cat-system)"></span>System / EDI transport</span>
+    <span class="legend-item"><span class="dot filled"></span>Real &amp; built in today's prototype</span>
+    <span class="legend-item"><span class="dot hollow"></span>Production spec, not yet live</span>
+  </div>
+  <p class="legend-note"><strong>Deterministic</strong> means the same input always produces the same output — ordinary math or a fixed rule, not a model forming a judgment. <strong>AI reasoning (LLM)</strong> means the stage weighs ambiguous, multi-factor evidence the way a person would, which is why those stages get the extra scrutiny in Section 04.</p>
+
+  <div class="pipeline-scroll">
+  <div class="pipeline">
+
+    <div class="node" data-cat="system" data-status="filled">
+      <div class="node-head"><span class="node-name">Data Ingestion</span><span class="node-tag">Nightly trigger</span></div>
+      <p class="node-desc">Pulls and normalizes every feed the pipeline needs before any stage runs.</p>
+      <div class="io-row">
+        <span class="io-chip">IN · dispense feed</span><span class="io-chip">IN · EDI 846</span><span class="io-chip">IN · FDA/ASHP list</span><span class="io-chip">IN · contracts</span>
+        <span class="io-chip out">OUT · normalized daily dataset</span>
+      </div>
+    </div>
+
+    <div class="node" data-cat="ml" data-status="filled">
+      <div class="node-head"><span class="node-name">1 · Demand Forecaster</span><span class="node-tag">LightGBM (prod) · trailing-avg (proto)</span></div>
+      <p class="node-desc">7-day SKU-store forecast with a confidence band; falls back to par-level guidance when a SKU has under six months of history.</p>
+      <p class="node-gloss">LightGBM is a fast, well-established statistical forecasting model — not a language model. Deterministic given the same history, and cheap enough to re-run nightly for every SKU at every store.</p>
+      <div class="io-row">
+        <span class="io-chip">IN · dispense history</span>
+        <span class="io-chip out">OUT · forecast + confidence band</span>
+      </div>
+    </div>
+
+    <div class="node" data-cat="llm" data-status="hollow">
+      <div class="node-head"><span class="node-name">2 · Shortage Watcher</span><span class="node-tag">Claude, via Azure AI Foundry</span></div>
+      <p class="node-desc">Reads FDA and ASHP shortage bulletins and maps any active shortage onto the chain's own formulary. Rule-based stand-in in today's prototype.</p>
+      <div class="io-row">
+        <span class="io-chip">IN · shortage bulletins</span>
+        <span class="io-chip out">OUT · shortage-linked SKUs</span>
+      </div>
+    </div>
+
+    <div class="node" data-cat="ml" data-status="filled">
+      <div class="node-head"><span class="node-name">3 · Inventory Reconciler</span><span class="node-tag">Deterministic</span></div>
+      <p class="node-desc">Nets the forecast against on-hand and in-transit inventory, flags stockout risk, and suppresses SKUs already covered by an open order.</p>
+      <div class="io-row">
+        <span class="io-chip">IN · forecast</span><span class="io-chip">IN · on-hand / in-transit</span>
+        <span class="io-chip out">OUT · stockout-risk flag</span>
+      </div>
+    </div>
+
+    <div class="node" data-cat="llm" data-status="hollow">
+      <div class="node-head"><span class="node-name">4 · Substitution Reasoner</span><span class="node-tag">Claude, escalates to Opus ~5%</span></div>
+      <p class="node-desc">Proposes a therapeutic alternative — Orange Book TE match, payer coverage, 340B eligibility — and hard-blocks on DEA Schedule II, no exceptions. Template logic in today's prototype.</p>
+      <p class="node-gloss"><strong>TE match</strong>: the FDA's own rating that a substitute is clinically interchangeable. <strong>340B eligibility</strong>: whether the store qualifies for a federal discount-pricing program on that drug. <strong>Escalates to Opus ~5%</strong>: the harder, more expensive model only steps in when the standard model's own confidence is low or two candidate substitutes conflict — most cases never need it.</p>
+      <div class="io-row">
+        <span class="io-chip">IN · shortage-linked SKU</span><span class="io-chip">IN · drug reference KB</span>
+        <span class="io-chip out">OUT · proposed substitute + rationale</span>
+      </div>
+    </div>
+
+    <div class="node" data-cat="ml" data-status="filled">
+      <div class="node-head"><span class="node-name">5 · Sourcing Optimizer</span><span class="node-tag">Deterministic</span></div>
+      <p class="node-desc">Chooses primary vs. secondary distributor by contract price, lead time, and allocation status.</p>
+      <div class="io-row">
+        <span class="io-chip">IN · contracts &amp; pricing</span><span class="io-chip">IN · lead time</span>
+        <span class="io-chip out">OUT · distributor + quantity</span>
+      </div>
+    </div>
+
+    <div class="node" data-cat="system" data-status="filled">
+      <div class="node-head"><span class="node-name">6 · PO Drafter</span><span class="node-tag">2-sigma sanity check</span></div>
+      <p class="node-desc">Assembles the draft order and checks the quantity against trailing 30-day order history before it ever reaches a buyer.</p>
+      <p class="node-gloss"><strong>2-sigma sanity check</strong>: flags any quantity that falls outside the normal statistical range for that drug's order history — a fat-finger or edge-case quantity gets caught here automatically, before a human ever sees it, not after.</p>
+      <div class="io-row">
+        <span class="io-chip">IN · sourcing decision</span>
+        <span class="io-chip out">OUT · draft order → buyer queue</span>
+      </div>
+    </div>
+
+    <div class="node human" data-cat="human">
+      <div class="node-head"><span class="node-name">Buyer Review — Human Gate</span><span class="node-tag">Every order, no exceptions</span></div>
+      <p class="node-desc">Approve as recommended, edit the quantity, approve many at once, or reject with a reason. Nothing transmits without this step.</p>
+    </div>
+
+    <div class="node" data-cat="system" data-status="filled">
+      <div class="node-head"><span class="node-name">7 · EDI Transmission</span><span class="node-tag">X12 850 → wholesaler VAN</span></div>
+      <p class="node-desc">Generates the real X12 850 purchase-order document and sends it to the distributor.</p>
+      <div class="io-row">
+        <span class="io-chip">IN · approved order</span>
+        <span class="io-chip out">OUT · X12 850 transmitted</span>
+      </div>
+    </div>
+
+    <div class="node" data-cat="ml" data-status="filled">
+      <div class="node-head"><span class="node-name">8 · Exception Handler</span><span class="node-tag">Watches 855 / 856</span></div>
+      <p class="node-desc">Tracks the wholesaler's acknowledgment — accepted, backordered, partial allocation.</p>
+      <div class="io-row">
+        <span class="io-chip">IN · 855 acknowledgment</span>
+        <span class="io-chip out">OUT · order status update</span>
+      </div>
+      <p class="loopback">↺ On backorder or partial allocation, re-enters at Sourcing Optimizer (5)</p>
+    </div>
+
+    <div class="node" data-cat="human" data-status="filled" style="border-left-color:var(--accent);">
+      <div class="node-head"><span class="node-name">Explainability Layer</span><span class="node-tag">Cross-cutting, every stage</span></div>
+      <p class="node-desc">Attaches a source citation to every stage's output as it runs — not a separate step, a wrapper on all of the above — so the compliance record is never reconstructed after the fact.</p>
+    </div>
+
+    <div class="pipeline-output">
+      <div class="node-head"><span class="node-name">Output</span><span class="node-tag">What the chain actually gets</span></div>
+      <p class="out-list"><span>Ranked reorder queue</span> for the buyer &nbsp;·&nbsp; <span>transmitted EDI 850</span> per approved order &nbsp;·&nbsp; <span>full audit trail</span> with citations</p>
+    </div>
+
+  </div>
+  </div>
+
+  <h2 class="section"><span class="num">04</span> Where We Are Today</h2>
+  <div class="status-box">
+    <div class="status-col real">
+      <h3><span class="dot filled"></span> Real, working now</h3>
+      <ul>
+        <li>Forecasting, inventory reconciliation, sourcing, PO drafting, exception handling — real logic, not scripted</li>
+        <li>Genuine X12 850/855 purchase-order generation</li>
+        <li>Complete audit trail with source citations, drillable per entry</li>
+        <li>Bulk order approval and role-based access for all five personas</li>
+      </ul>
+    </div>
+    <div class="status-col pending">
+      <h3><span class="dot hollow"></span> Still ahead</h3>
+      <ul>
+        <li>Claude-powered reasoning for the Shortage Watcher and Substitution Reasoner (rule-based today)</li>
+        <li>Production cloud infrastructure (currently runs locally, in memory)</li>
+        <li>Live wholesaler connection in place of a simulated response</li>
+        <li>Enterprise SSO / MFA in place of the demo role-picker</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="section"><span class="num">05</span> Full Application — Flow Chart</h2>
+  <p>Section 03 zoomed into the pipeline's nine stages. This is the whole app around it: who logs in, what they touch, what the app reads from the outside world, what it sends to a real distributor, and what it permanently records — with arrows tracing the actual direction each piece of data moves.</p>
+
+  <div class="arch-legend">
+    <span><span class="arch-swatch-solid"></span>Inside the app</span>
+    <span><span class="arch-swatch-dashed"></span>External system — outside RxForecast's boundary</span>
+    <span><span class="dot filled" style="margin-right:0.4rem;"></span>Real &amp; built today</span>
+    <span><span class="dot hollow" style="margin-right:0.4rem;"></span>Simulated or production-spec only</span>
+  </div>
+
+  <div class="mermaid-wrap">
+  <pre class="mermaid">
+flowchart TD
+    BUYER["Category Buyer"]
+    DIR["Director of Supply Chain"]
+    PICP["Pharmacist-in-Charge"]
+    COMPP["Compliance Officer"]
+    PHARMP["Pharmacist (clinical)"]
+
+    FRONTEND["Frontend Application<br/>Reorder Queue · Shortages · Rules · Dashboard · Audit Trail"]
+    BACKEND["Backend / API Layer<br/>auth, RBAC, orchestration"]
+    SOURCES["External Data Sources<br/>dispense history · EDI 846 · FDA/ASHP · contracts · drug KB"]
+
+    subgraph PIPELINE["Agent Pipeline — 9 stages, nightly + on-demand"]
+        ING["Data Ingestion"]
+        FC["1 · Demand Forecaster"]
+        IR["2 · Inventory Reconciler"]
+        SW{"3 · Shortage Watcher<br/>shortage found?"}
+        SR["4 · Substitution Reasoner"]
+        SO["5 · Sourcing Optimizer"]
+        PD["6 · PO Drafter<br/>2-sigma sanity check"]
+        EDIX["7 · EDI Transmission"]
+        EH["8 · Exception Handler"]
+
+        ING --> FC --> IR --> SW
+        SW -->|yes| SR --> SO
+        SW -->|no| SO
+        SO --> PD
+    end
+
+    HUMAN{{"Buyer Review — Human Gate<br/>approve · edit · bulk-approve · reject"}}
+    WHOLESALER["Wholesaler / Distributor<br/>McKesson · Cardinal Health · AmerisourceBergen"]
+    STORES["Data Stores<br/>Purchase Orders · Audit Log · Buyer Decision Log"]
+
+    BUYER --> FRONTEND
+    DIR --> FRONTEND
+    PICP --> FRONTEND
+    COMPP --> FRONTEND
+    PHARMP --> FRONTEND
+
+    FRONTEND -->|requests| BACKEND
+    BACKEND -->|triggers| ING
+    SOURCES --> ING
+    PD -->|drafted order| HUMAN
+    HUMAN -->|approved| EDIX
+    EDIX --> EH
+    EH -.->|backorder, replan| SO
+    EDIX -->|EDI 850| WHOLESALER
+    WHOLESALER -->|855 ack, 856 ship notice| EH
+    PIPELINE -->|ranked reorder queue| FRONTEND
+    BACKEND -->|writes every action| STORES
+    STORES -->|reads| COMPP
+    STORES -.->|override history, few-shot context| SR
+    STORES -.->|override history| SO
+
+    classDef external stroke-dasharray:5,5;
+    class SOURCES,WHOLESALER external
+  </pre>
+  </div>
+  <p class="mermaid-caption">Solid arrows are the everyday path an order takes; dashed arrows are the two feedback loops — a wholesaler backorder re-entering Sourcing, and buyer decisions feeding back into the pipeline as learning context. Full stage-by-stage detail on the Agent Pipeline box is in Section 03 above.</p>
+
+  <h2 class="section"><span class="num">06</span> Pipeline Inputs &amp; Outputs — Detail Table</h2>
+  <p>Every stage from Section 03, laid out by exactly what it reads, exactly what it hands to the next stage, and whether it's genuinely agentic or could be — and today, mostly is — handled with ordinary deterministic logic. Where a stage reads more than one thing, each source is its own line; nothing here is summarized away.</p>
+
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr><th>Stage</th><th>Inputs</th><th>Outputs</th><th>Agentic or Deterministic?</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="pstage"><span class="pname">Data Ingestion</span><span class="ptag"><span class="swatch" style="background:var(--cat-system)"></span>System</span></td>
+          <td class="pin"><ul class="io-list">
+            <li>Dispense history — NCPDP 837 aggregates</li>
+            <li>Distributor inventory feed — EDI 846</li>
+            <li>FDA Drug Shortage List &amp; ASHP bulletins</li>
+            <li>Contract / GPO / 340B pricing sheets</li>
+            <li>Drug reference KB (NDC, Orange Book, RxNorm, DEA schedules)</li>
+            <li>Buyer override history</li>
+          </ul></td>
+          <td class="pout"><ul class="io-list"><li>One normalized daily dataset, available to every downstream stage</li></ul></td>
+          <td class="pmech">
+            <div class="pmech-label det"><span class="swatch" style="background:var(--cat-ml)"></span>Deterministic</div>
+            <p class="pmech-how">A scheduled pull-and-normalize job. Same feeds in, same structured dataset out, every time — no judgment involved.</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="pstage"><span class="pname">1 · Demand Forecaster</span><span class="ptag"><span class="swatch" style="background:var(--cat-ml)"></span>Deterministic / ML</span></td>
+          <td class="pin"><ul class="io-list"><li>SKU-store-day dispense history</li></ul></td>
+          <td class="pout"><ul class="io-list">
+            <li>7-day SKU-store forecast + confidence band</li>
+            <li>Falls back to par-level guidance under 6 months of history</li>
+          </ul></td>
+          <td class="pmech">
+            <div class="pmech-label det"><span class="swatch" style="background:var(--cat-ml)"></span>Deterministic (ML)</div>
+            <p class="pmech-how">A trained forecasting model — LightGBM in the production spec, a trailing-average in today's prototype — applied to historical numbers. Same history always produces the same forecast; nothing here is a judgment call.</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="pstage"><span class="pname">2 · Shortage Watcher</span><span class="ptag"><span class="swatch" style="background:var(--cat-llm)"></span>AI reasoning</span></td>
+          <td class="pin"><ul class="io-list">
+            <li>FDA Drug Shortage List — polled every 4 hrs</li>
+            <li>ASHP bulletins — polled daily</li>
+            <li>Chain formulary — to map bulletins onto in-scope NDCs</li>
+          </ul></td>
+          <td class="pout"><ul class="io-list"><li>List of shortage-linked SKUs, cross-checked against both sources</li></ul></td>
+          <td class="pmech">
+            <div class="pmech-label agentic"><span class="swatch" style="background:var(--cat-llm)"></span>Agentic</div>
+            <p class="pmech-how">Bulletins arrive as free text and press releases, worded differently every time — an LLM has to extract and normalize them, a fixed rule set can't keep up with the phrasing. <strong>Today's prototype substitutes a deterministic keyword-match rule set</strong> — it works against the known demo dataset but wouldn't generalize to a bulletin worded in a new way.</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="pstage"><span class="pname">3 · Inventory Reconciler</span><span class="ptag"><span class="swatch" style="background:var(--cat-ml)"></span>Deterministic</span></td>
+          <td class="pin"><ul class="io-list">
+            <li>Forecast — from stage 1</li>
+            <li>On-hand + in-transit inventory (EDI 846)</li>
+            <li>Open PO status — to suppress duplicate orders</li>
+          </ul></td>
+          <td class="pout"><ul class="io-list"><li>Stockout-risk flag per SKU-store</li></ul></td>
+          <td class="pmech">
+            <div class="pmech-label det"><span class="swatch" style="background:var(--cat-ml)"></span>Deterministic</div>
+            <p class="pmech-how">Arithmetic: forecast minus on-hand minus in-transit, checked against a reorder-point threshold. A spreadsheet formula could do this.</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="pstage"><span class="pname">4 · Substitution Reasoner</span><span class="ptag"><span class="swatch" style="background:var(--cat-llm)"></span>AI reasoning</span></td>
+          <td class="pin"><ul class="io-list">
+            <li>Shortage-linked SKU — from stage 2</li>
+            <li>Orange Book TE codes, RxNorm, NDC directory, DEA schedules</li>
+            <li>Payer coverage &amp; 340B eligibility</li>
+            <li>Contract / formulary availability</li>
+          </ul></td>
+          <td class="pout"><ul class="io-list">
+            <li>Proposed substitute NDC + rationale</li>
+            <li>Hard-blocked, no output, on DEA Schedule II — no exceptions</li>
+          </ul></td>
+          <td class="pmech">
+            <div class="pmech-label agentic"><span class="swatch" style="background:var(--cat-llm)"></span>Agentic</div>
+            <p class="pmech-how">Weighs several independent, sometimes conflicting factors at once — TE match, payer coverage, 340B eligibility, contract availability — a combinatorial judgment call, not a lookup table. <strong>One part is always deterministic regardless:</strong> the DEA Schedule II block is hard-coded logic, never delegated to the model — a safety rule that must never have exceptions shouldn't depend on a probabilistic system.</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="pstage"><span class="pname">5 · Sourcing Optimizer</span><span class="ptag"><span class="swatch" style="background:var(--cat-ml)"></span>Deterministic</span></td>
+          <td class="pin"><ul class="io-list">
+            <li>GPO / 340B / direct contract pricing</li>
+            <li>Distributor lead time — historical 850→856 deltas</li>
+            <li>Allocation status</li>
+          </ul></td>
+          <td class="pout"><ul class="io-list"><li>Chosen distributor + order quantity</li></ul></td>
+          <td class="pmech">
+            <div class="pmech-label det"><span class="swatch" style="background:var(--cat-ml)"></span>Deterministic</div>
+            <p class="pmech-how">A cost / lead-time / allocation comparison across a known, finite list of distributors — picks whichever satisfies the constraints at lowest cost.</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="pstage"><span class="pname">6 · PO Drafter</span><span class="ptag"><span class="swatch" style="background:var(--cat-system)"></span>System</span></td>
+          <td class="pin"><ul class="io-list">
+            <li>Sourcing decision — from stage 5</li>
+            <li>Trailing 30-day order history — for the 2-sigma sanity check</li>
+          </ul></td>
+          <td class="pout"><ul class="io-list"><li>Draft purchase order, queued for buyer review</li></ul></td>
+          <td class="pmech">
+            <div class="pmech-label det"><span class="swatch" style="background:var(--cat-ml)"></span>Deterministic</div>
+            <p class="pmech-how">Assembles the order from the sourcing decision and runs the 2-sigma statistical check against trailing order history — templating and arithmetic, no judgment.</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="pstage"><span class="pname">Buyer Review — Human Gate</span><span class="ptag"><span class="swatch" style="background:var(--cat-human)"></span>Human-in-the-loop</span></td>
+          <td class="pin"><ul class="io-list"><li>Draft order — from stage 6</li></ul></td>
+          <td class="pout"><ul class="io-list"><li>Approved as-is, edited, bulk-approved, deferred, or rejected with a reason</li></ul></td>
+          <td class="pmech">
+            <div class="pmech-label human"><span class="swatch" style="background:var(--cat-human)"></span>Neither — human decision</div>
+            <p class="pmech-how">Not an agent at all. A person approves, edits, or rejects. This is the one step the system deliberately does not automate.</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="pstage"><span class="pname">7 · EDI Transmission</span><span class="ptag"><span class="swatch" style="background:var(--cat-system)"></span>System</span></td>
+          <td class="pin"><ul class="io-list"><li>Buyer-approved order</li></ul></td>
+          <td class="pout"><ul class="io-list"><li>Transmitted X12 850 purchase-order document, sent to the distributor</li></ul></td>
+          <td class="pmech">
+            <div class="pmech-label det"><span class="swatch" style="background:var(--cat-ml)"></span>Deterministic</div>
+            <p class="pmech-how">Formats the approved order into the X12 850 segment structure and assigns the next control number in sequence — a protocol/templating task, not a decision.</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="pstage"><span class="pname">8 · Exception Handler</span><span class="ptag"><span class="swatch" style="background:var(--cat-ml)"></span>Deterministic</span></td>
+          <td class="pin"><ul class="io-list">
+            <li>X12 855 acknowledgment</li>
+            <li>X12 856 advance ship notice</li>
+          </ul></td>
+          <td class="pout"><ul class="io-list">
+            <li>Order status update — accepted, backordered, or partial allocation</li>
+            <li>On backorder: re-enters the pipeline at stage 5, Sourcing Optimizer</li>
+          </ul></td>
+          <td class="pmech">
+            <div class="pmech-label det"><span class="swatch" style="background:var(--cat-ml)"></span>Deterministic</div>
+            <p class="pmech-how">A fixed state machine keyed on the 855's status code — accepted, backordered, or partial — routing to a replan only on the backorder branch. A decision table, not reasoning.</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="pstage"><span class="pname">Explainability Layer</span><span class="ptag"><span class="swatch" style="background:var(--accent)"></span>Cross-cutting</span></td>
+          <td class="pin"><ul class="io-list"><li>Every stage's own output, as it's produced</li></ul></td>
+          <td class="pout"><ul class="io-list"><li>A source citation attached to each output, accumulated into the audit trail</li></ul></td>
+          <td class="pmech">
+            <div class="pmech-label det"><span class="swatch" style="background:var(--cat-ml)"></span>Deterministic</div>
+            <p class="pmech-how">A wrapper that mechanically attaches whatever citation each stage already produced to the run record — it doesn't generate new judgment of its own.</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    <span>RxForecast — Predictive EDI Ordering Agent</span>
+    <span>Prepared for internal review</span>
+  </footer>
+
+</div>
