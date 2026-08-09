@@ -341,6 +341,7 @@ Location: `C:\Users\swapn\Desktop\AIPMCourse\RxForecast_SyntheticData\`
 5. If production-scale synthetic data is needed for load-testing, the generator can be re-parameterized to the PRD's 200-store / 8K-SKU / 3-year target.
 6. Push this project (PRDs, synthetic data, this plan) to `github.com/SwapnaSaha/AIProjects`.
 7. See `PRD.md` in this same folder for the full PRD reorganized under the "New PRD" review checklist (Problem, User, Core Metric, MVP Features, Constraints, Grounding Strategy, Hallucination Guardrails, Evaluation Strategy, Production Readiness).
+8. **(added 2026-08-01)** A working, demoable prototype of steps 1–3 above (plus the buyer/director/PIC/compliance/pharmacist UI) now exists at `app/` — real forecast computation, real X12 850/855 generation, a real audit trail with citations, bulk-approve, and server-enforced PIC store-scoping. It's a customer-feedback demo on trimmed synthetic data, not a production build; `app/GAPS.md` is the authoritative list of what's simulated versus real, and `app/README.md` has the run instructions.
 
 ---
 

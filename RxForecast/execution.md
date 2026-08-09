@@ -77,7 +77,7 @@ Scope per `PRD.md` roadmap: "Pilot chain integration (EDI 846 ingest from McKess
 - [ ] Entra External ID (or WorkOS, per §2.1 decision) integration: SSO start/callback routes, IdP-group → role/store mapping
 - [ ] Email+password+MFA fallback path (pilot-only, per `engg.md` §0.1 rationale)
 - [ ] JWT issuance (`issueSessionTokens`), verification, refresh-on-401 flow
-- [ ] `enforceStoreScope()` / `enforceChainScope()` helper — the actual mechanism behind every RBAC note in Features 1–8
+- [ ] `enforceStoreScope()` / `enforceChainScope()` helper — the actual mechanism behind every RBAC note in Features 1–8 (behavior prototype-validated 2026-08-01: PIC's requested `store_id` is server-overridden on every FEATURE_1 read, and FEATURE_3's PO-creation routes 403 a cross-store write — still needs the real JWT/Postgres-role version for production, this only proves the enforcement *shape* is right)
 - [ ] `<RouteGuard>` frontend component wrapping every route
 - [ ] Session policy enforced: 15-min inactivity timeout, 12-hr absolute max, MFA required for compliance/director/pharmacist roles
 - [ ] Login/logout/failed-login/session-revoke events write to `audit_log`
@@ -115,6 +115,8 @@ Scope per `PRD.md` roadmap: "Pilot chain integration (EDI 846 ingest from McKess
 ### 3.5 Buyer-facing features — FEATURE_1, FEATURE_3 (`FE`; full specs: `engg.md`)
 
 - [ ] **FEATURE_1 Reorder Queue**: `v_reorder_queue` materialized view, `GET /api/queue`, `<QueueTable>`/`<QueueRow>`/`<ReorderDetailDrawer>`, priority-score formula, empty/stale-queue states
+- [ ] **FEATURE_1 Bulk approve**: `POST /api/pos/bulk` with per-item results (207 Multi-Status), `<BulkActionBar>`, checkbox+inline-quantity UI with a decoupled edit/save step (pre-filled agent-recommended qty, per-row Save commits an override, unsaved edits don't carry into the batch), Schedule II exclusion (flow prototype-validated 2026-08-01 — production version needs the `Idempotency-Key` treatment described in `lld.md` §6, which the prototype's in-memory endpoint doesn't implement)
+- [ ] **FEATURE_1 Defer resurfacing**: per-user defer set cleared on that user's next login, Reject kept on a separate permanent set (prototype-validated 2026-08-01 as the demo's stand-in for the real 24h/nightly-cycle resurfacing — production still needs the actual scheduled job, this only proves the "defer is temporary, reject is not" distinction end to end)
 - [ ] **FEATURE_3 Forecast View**: `GET /api/forecast/{store_id}/{ndc}`, `<ForecastChart>`/`<WhyPanel>`, cold-start "insufficient data" state
 
 ### 3.6 Design system foundation (`FE`; source: `design-system.md`)
@@ -196,6 +198,7 @@ Scope per `PRD.md` roadmap: "Expand to top 2,000 SKUs. Substitution Reasoner (ad
 
 - [ ] **FEATURE_2 Shortage Alert Feed**: `<ShortageCard>`, accept/reject flow, `an-critical` Schedule II disable state
 - [ ] **FEATURE_6 Buyer Overrides**: `/rules` page, CRUD, conflict-detection warning, integration test confirming a deactivated rule is excluded from the next agent run's prompt context
+- [ ] **FEATURE_6 Rule detail drawer**: `<OverrideDetailDrawer>`, `GET /api/audit?entity_type&entity_id` (flow prototype-validated 2026-08-01 — including catching and fixing a query-invalidation gap where toggling a rule from inside its own drawer updated the badge but not the history list until the audit-history query was explicitly invalidated too, not just the rules list)
 - [ ] **FEATURE_8 Director Dashboard v1**: `weekly_chain_metrics` materialized view, weekly batch job, `<KpiTile>`/`<TrendChart>`
 
 ### 4.5 Human-in-the-loop — pharmacist panel (`FE`, `SEC`; source: `PRD.md` §4, §9)
@@ -250,6 +253,7 @@ Scope per `PRD.md` roadmap: "One-click EDI 850 generation + transmission. Except
 - [ ] **FEATURE_4 Approve/Modify/Reject**: `<POActionBar>`, 2-sigma quantity sanity check, Schedule II hard-block (no Approve/Modify buttons rendered at all), optimistic-locking concurrency handling
 - [ ] **FEATURE_5 status surface**: `<POStatusStepper>`, `<RawEdiViewer>`
 - [ ] **FEATURE_7 Audit Trail**: `<AuditTable>` with cursor pagination, CSV export, DB-level immutability test passing
+- [ ] **FEATURE_7 Audit entry detail drawer**: `<AuditEntryDetail>` — plain-language description per entity-type/action, payload key-value grid, numbered citations list, linked raw X12 850/855 for `purchase_order` entries (flow prototype-validated 2026-08-01; production version additionally needs `redactPHI(payload)` applied before render, per `engg.md` FEATURE_7 §02, and cursor-based fetch instead of the prototype's full-list-then-click)
 
 ### 5.4 Sourcing refinements (`AGENT`)
 

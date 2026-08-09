@@ -2,6 +2,10 @@
 
 Predictive EDI ordering agent for mid-market pharmacy chains — AI Product Management project.
 
+## Working prototype
+
+**[app/](./app/)** — a working, demoable prototype of the core ordering loop (real forecasting, real X12 850/855 generation, real audit trail with citations, bulk approve, role-scoped access) built to gather customer feedback ahead of the full production build below. Start with **[app/README.md](./app/README.md)** to run it, and **[app/GAPS.md](./app/GAPS.md)** for exactly what's real vs. simulated versus the spec in the docs below.
+
 ## Docs, in reading order
 
 1. **[plan.md](./plan.md)** — build plan, PRD analysis, architecture overview, data-point catalog

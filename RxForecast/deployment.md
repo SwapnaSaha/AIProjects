@@ -114,6 +114,7 @@ Organized by layer. Each item is either already specified elsewhere (cited) or a
 - [ ] No shared service accounts between services — each Container App has its own identity
 - [ ] Break-glass DB access uses a separate credential from normal app access, itself logged (`lld.md` §7.4)
 - [ ] `enforceChainScope()`/`enforceStoreScope()` tested with an actual cross-tenant access attempt in CI, not just unit-tested in isolation (a test that logs in as Chain A's user and attempts to read Chain B's data via the API, expecting a 403/404)
+- [ ] **PIC cross-store test** (added 2026-08-01, same pattern as the line above but at the store level): log in as a PIC user, attempt (a) `GET /api/queue?store_id=<other_store>` and confirm the response is silently scoped back to the PIC's own store rather than honoring the param, and (b) `POST /api/pos` / `POST /api/pos/bulk` for an NDC at another store and confirm 403 per item. The demo prototype implements and passes both checks against its in-memory `enforceStoreScope()` (`engg.md` FEATURE_0) — this line tracks re-verifying the same behavior once that logic moves to the real JWT-claims-based implementation, since a refactor is exactly where this kind of check silently regresses.
 
 ### 3.1.1 Internal Admin Dashboard (FEATURE_9) — its own, stricter checklist
 
@@ -150,6 +151,7 @@ The admin metrics dashboard (`engg.md` FEATURE_9, `lld.md` §3.2.1) is the highe
 - [ ] Parameterized queries / ORM usage enforced everywhere touching Postgres — no raw string-interpolated SQL, checked via a linter rule in CI (SQL injection is otherwise a live risk given this system handles financially and clinically consequential writes)
 - [ ] Input validation on every mutating API endpoint — quantity fields, NDC format, date ranges — rejecting malformed input before it reaches business logic, not relying on DB constraints as the only backstop
 - [ ] `Idempotency-Key` enforcement tested against replay attempts, not just documented (`lld.md` §6)
+- [ ] **Bulk-endpoint abuse limits** (added 2026-08-01, covers `POST /api/pos/bulk`): a request-body size cap (the prototype hardcodes 200 items/request) enforced server-side, plus per-user rate limiting on the bulk route specifically — an uncapped or unthrottled bulk-approve endpoint lets a compromised buyer session generate an outsized volume of real distributor purchase orders in one call, which is a materially larger blast radius than the single-PO endpoint it's built on
 - [ ] Content-Security-Policy header on the React SPA restricting script sources — mitigates XSS given the access token is held in memory (per `engg.md` FEATURE_0's design) but the app itself must not be exploitable to read that memory via injected script
 - [ ] Dependency scanning (Dependabot or Snyk) on every repo, with a policy that critical CVEs block merge, not just generate a notification
 - [ ] Secret-scanning enabled on the GitHub org (gitleaks or GitHub's native secret scanning) — catches an accidentally-committed API key before it reaches `main`

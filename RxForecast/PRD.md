@@ -1,7 +1,10 @@
 # RxForecast — Product Requirements Document
 
-**Predictive EDI Ordering Agent for Mid-Market Pharmacy Chains** 
+**Predictive EDI Ordering Agent for Mid-Market Pharmacy Chains**
+Cohort 9 — PRD for AI Products (source: 5 weekly PRD docs, treated as one PRD)
 
+> **Note on this version:** content is unchanged from the original 5-week PRD. It's reorganized here under the standard checklist: Problem, User, Core Metric, MVP Features, Constraints, Grounding Strategy, Hallucination Guardrails, Evaluation Strategy, Production Readiness. Two sections are **renamed** for clarity (no content lost): *Prompt Strategy + Knowledge Base* → **Grounding Strategy**; *Launch Plan + Go-live Criteria* → **Production Readiness**. One section is **new**: **Constraints**, consolidating statements that were previously scattered across Target Market, Model Requirements, and Responsible AI. Supplementary material that doesn't map to the checklist (risk register, tech stack, market sizing, full Responsible AI detail) is preserved in the Appendix rather than dropped.
+>
 > Build plan and execution roadmap: see `plan.md` in this same folder.
 
 ---
@@ -269,6 +272,8 @@ Full evaluation spreadsheet (forecast cases, substitution scenarios, sourcing tr
 
 *(Renamed from "Launch Plan" + "Go-live Decision Criteria" — same content, plus the Reliability/Safety recovery tiers.)*
 
+*(Note, added 2026-08-01: a working prototype covering the buyer/director/PIC/compliance/pharmacist flows below — including bulk approve and a citation-backed audit detail view — exists at `app/` for customer-feedback demos ahead of the launch plan below. It is not itself a production-readiness milestone; see `app/GAPS.md` for exactly what's simulated versus real.)*
+
 ### Launch plan
 
 1. **Measurement launch** — 1 store, 2 weeks, shadow mode. Agent generates recommendations; buyer does not act on them. Validates forecast accuracy and source-citation rate.
@@ -449,3 +454,4 @@ Plus a **$50K one-time implementation fee** (waived for early design-partner cus
 
 ---
 
+*Reorganized from `PRD_ForecastRx.docx` (Week 1), `Week2_PRD.docx` (Week 2), `RxForecast_Week3_PRD.docx` (Week 3), `PRD_Week4_RxForecast.docx` (Week 4), and `PRD_Week5_RxForecast.docx` (Week 5) — Cohort 9, PRD for AI Products.*
