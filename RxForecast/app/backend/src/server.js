@@ -38,7 +38,7 @@ app.use((err, req, res, next) => {
   void next;
 });
 
-initContext();
+await initContext();
 app.listen(PORT, () => {
   console.log(`\nRxForecast prototype API listening on http://localhost:${PORT}`);
   console.log('This is a demo server — in-memory data, mock auth, simulated EDI transport. See GAPS.md.\n');

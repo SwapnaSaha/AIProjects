@@ -7,7 +7,7 @@ import { state } from './data/state.js';
 
 export const ctx = {};
 
-export function initContext() {
+export async function initContext() {
   console.log('[boot] loading synthetic dataset (trimmed demo subset)...');
   const data = loadDemoData();
   Object.assign(ctx, data);
@@ -23,7 +23,9 @@ export function initContext() {
   }
   ctx.inventoryByKey = new Map(data.inventory.map(i => [`${i.storeId}|${i.ndc}`, i]));
 
-  state.substitutions = buildLiveSubstitutions(data.shortages, data.formulary, data.contracts, data.stores);
+  // Async since 2026-08-12 — buildLiveSubstitutions may call the Foundry-hosted Claude
+  // deployment per option when FOUNDRY_ENDPOINT is configured (substitution.js).
+  state.substitutions = await buildLiveSubstitutions(data.shortages, data.formulary, data.contracts, data.stores);
   state.overridesActive = [...data.overrides];
 
   console.log(`[boot] loaded ${data.stores.length} stores, ${data.formulary.length} NDCs (demo subset), ` +

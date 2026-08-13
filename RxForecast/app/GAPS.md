@@ -31,7 +31,7 @@ Worth stating plainly, since a demo full of caveats can undersell what's genuine
 | Category | Severity | This prototype | Production spec |
 |---|---|---|---|
 | Authentication | 🔴 Critical | Mock role picker, no password, opaque bearer token, no expiry | SSO (Entra External ID/WorkOS) + MFA + JWT + 15-min timeout (`engg.md` FEATURE_0) |
-| AI reasoning (Shortage Watcher, Substitution Reasoner) | 🔴 Critical | Rule-based templates over pre-loaded synthetic data | Claude via Azure AI Foundry, RAG over Azure AI Search (`lld.md` §4) |
+| AI reasoning (Shortage Watcher, Substitution Reasoner) | 🔴 Critical | Real Foundry/Content Safety integration code exists (2026-08-12) but runs on template fallback — no credentials set in this environment | Claude via Azure AI Foundry, RAG over Azure AI Search (`lld.md` §4) |
 | Cloud infrastructure | 🔴 Critical | Runs on a local machine, nothing provisioned | Full Azure stack — Container Apps, Postgres Flexible Server, Cosmos DB, Blob Storage, Key Vault (`lld.md` §1–3) |
 | Data persistence | 🔴 Critical | In-memory, resets on restart | Postgres with partitioning, append-only role grants (`lld.md` §3.2–3.3) |
 | EDI transport | 🟠 High | Simulated distributor responses on a timer | Real AS2/SFTP VAN connection (`lld.md` §5) |
@@ -54,8 +54,8 @@ Worth stating plainly, since a demo full of caveats can undersell what's genuine
 
 ### AI reasoning
 - Shortage Watcher doesn't poll FDA/ASHP — reads the pre-generated synthetic CSV and re-labels a handful of historical events as "active" for demo purposes (flagged in the UI itself, not hidden)
-- Substitution Reasoner is template logic (generic-name matching + TE-code lookup + hardcoded rationale sentences), not Claude reasoning — confidence scores are fixed constants (0.86 / 0.52), not model self-reports
-- No RAG, no Azure AI Search, no Azure AI Foundry connection at all
+- Substitution Reasoner: **real Foundry integration point added 2026-08-12** (`backend/src/lib/foundryClient.js`, `contentSafety.js`, `evals.js`), but still runs template logic today because no `FOUNDRY_ENDPOINT`/`FOUNDRY_API_KEY` are set in this environment — `substitution.js` tries the Foundry-hosted Claude deployment first, then the Content Safety groundedness gate, then falls back to the original template rationale on any failure or missing config; verified live (server boot + accept-flow test, 2026-08-12) that the fallback path behaves identically to the pre-integration build. Confidence scores are still fixed constants (0.86 / 0.52), not model self-reports — that's unchanged either way. Set the three `FOUNDRY_*` env vars (see `.env.example`) to actually exercise the real path; the exact Foundry Model Inference API request/response contract used in `foundryClient.js` hasn't been verified against a live endpoint yet and should be checked against your deployment's own API reference first.
+- No RAG, no Azure AI Search — the Foundry call above uses the same structured facts the template already had (formulary, contract, DEA schedule), not a real RAG retrieval over `formulary-kb`
 - **Close via:** `lld.md` §4 (LangGraph node graph), §4.5 (Foundry integration), `execution.md` §4.1
 
 ### Cloud infrastructure & persistence

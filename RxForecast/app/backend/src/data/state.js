@@ -12,6 +12,9 @@ export const state = {
   deferredQueueItems: new Map(), // userId -> Set(`${storeId}|${ndc}`) — cleared for a user the next time THEY log in (see login())
   rejectedQueueItems: new Set(), // `${storeId}|${ndc}`, permanent — an explicit decision, never resurfaces on its own
   poSeq: 1,
+  // AI Quality signal, distinct from auditLog above (engg.md FEATURE_9's ai_quality
+  // metric category — quality monitoring, not the legal/compliance audit trail).
+  evalLog: [],              // { id, callType, traceId, foundryUsed, contentSafety, createdAt }
 };
 
 let auditSeq = 1;
@@ -28,6 +31,18 @@ export function writeAudit({ entityType, entityId, action, actorUserId, actorRol
 
 export function nextPoId() {
   return `PO${String(state.poSeq++).padStart(6, '0')}`;
+}
+
+let evalSeq = 1;
+export function writeEval({ callType, traceId, foundryUsed, contentSafety }) {
+  const entry = {
+    id: `EVAL${String(evalSeq++).padStart(6, '0')}`,
+    callType, traceId, foundryUsed: Boolean(foundryUsed),
+    contentSafety: contentSafety || null,
+    createdAt: new Date().toISOString(),
+  };
+  state.evalLog.push(entry);
+  return entry;
 }
 
 // Mock session store — FEATURE_0's real spec is SSO (Entra External ID/WorkOS) + JWT +
