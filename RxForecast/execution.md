@@ -43,6 +43,7 @@ Nothing in Phase 1 can start until this phase is done — it's infrastructure an
 - [ ] NSGs restricting data-subnet access to the Container Apps Environment's subnet only
 - [ ] Terraform repo scaffolded: `modules/networking`, `modules/postgres`, `modules/container-apps`, `modules/cosmos`, `modules/storage`, `modules/keyvault`, `modules/ai-foundry`
 - [ ] Core resources stood up in `dev` first: Container Apps Environment, Azure Container Registry, Key Vault, Azure Database for PostgreSQL Flexible Server (zone-redundant), Cosmos DB (NoSQL API), Blob Storage (3 containers: `edi-raw`, `model-artifacts`, `exports`), Azure AI Search, Azure AI Foundry project with Sonnet + Opus deployments
+- [ ] Azure AI Content Safety resource provisioned (added 2026-08-12) — separate resource from the Foundry project, feeds the groundedness gate in `lld.md` §4.5
 - [ ] Azure Front Door + Static Web Apps configured for the (not-yet-built) React SPA
 - [ ] Managed Identities created for each Container App, RBAC-scoped to only the resources that app needs (least privilege, not a shared identity)
 
@@ -56,6 +57,7 @@ Nothing in Phase 1 can start until this phase is done — it's infrastructure an
 
 - [ ] Microsoft Azure BAA executed (HIPAA)
 - [ ] Anthropic terms confirmed for Claude access via Azure AI Foundry's model catalog
+- [ ] Azure AI Content Safety and Foundry Evaluation SDK usage terms confirmed under the same Azure BAA (added 2026-08-12) — not assumed automatically covered by the Foundry model-catalog agreement alone
 - [ ] Prefect Cloud, Datadog accounts provisioned
 - [ ] Pilot chain's distributor VAN credentials obtained (McKesson AS2 endpoint per `PRD.md`'s pilot scope)
 - [ ] Pilot chain data-sharing agreement covering the 24 months of historical dispense/PO/EDI data required by `PRD.md` §8 Ground Truth Setup
@@ -107,6 +109,7 @@ Scope per `PRD.md` roadmap: "Pilot chain integration (EDI 846 ingest from McKess
 - [ ] `forecaster-worker` Container Apps Job (scheduled, not always-on) wired to nightly cadence
 - [ ] **Inventory Reconciler** node — nets forecast against on-hand/in-transit
 - [ ] **Shortage Watcher** node — LLM extraction from FDA/ASHP text via Azure AI Foundry (Claude Sonnet)
+- [ ] `trace_id` capture wired on every Foundry call (added 2026-08-12), threaded into `StoreRunState.citations` per `lld.md` §4.5
 - [ ] Explainability citation wrapper (`@with_citations`) applied to every LLM-calling node
 - [ ] Prefect flow-per-chain, fan-out to per-store LangGraph sub-runs, bounded concurrency (20 concurrent stores default)
 - [ ] Idempotency: node output keyed on `(run_id, node_name)` in Cosmos DB checkpoint store
@@ -178,6 +181,8 @@ Scope per `PRD.md` roadmap: "Expand to top 2,000 SKUs. Substitution Reasoner (ad
 
 - [ ] **Substitution Reasoner** node — Claude via Foundry, RAG over Azure AI Search `formulary-kb`, chain-of-thought (TE class → payer → contract → DEA schedule → store history)
 - [ ] SAFE1 node — hardcoded Schedule II/DSCSA hard-block check, routes to `an-critical` pharmacist queue on block
+- [ ] **Content Safety groundedness gate** (added 2026-08-12) — every Substitution Reasoner output scored against its retrieved grounding docs before SAFE2; below-threshold routes to pharmacist review (`lld.md` §4.5, threshold is open decision §12.8)
+- [ ] **Foundry Evaluation SDK wired for continuous production scoring** (added 2026-08-12) — sampled live calls scored async, nightly rollup into `metric_snapshots.ai_quality` (`engg.md` FEATURE_9, `PRD.md` §8)
 - [ ] **Sourcing Optimizer** node — multi-distributor cost/availability comparison
 - [ ] Model routing (`route_model`) — Sonnet default, Opus escalation on low-confidence or conflicting-TE-code cases (~5% target)
 - [ ] Forecast scope expanded from top-200 to top-2,000 SKUs
@@ -215,6 +220,7 @@ Scope per `PRD.md` roadmap: "Expand to top 2,000 SKUs. Substitution Reasoner (ad
 ### 4.7 Admin Metrics Dashboard — AI Quality & User Trust categories (`SEC`, `DATA`, `FE`; extends §3.10, full spec: `engg.md` FEATURE_9, taxonomy: `lld.md` §3.2.2)
 
 - [ ] `metric_snapshots` job extended to write **AI Quality** metrics (from §4.6's harness output: MAPE/MAE/sMAPE, substitution appropriateness, citation-grounding rate, calibration error, Sonnet/Opus routing split) and HHH gate status (`computeHHHGateStatus()` against `PRD.md` §9's per-stage thresholds, rendered via `<AIQualityPanel>`/`<HHHGateStatusPanel>`)
+- [ ] AI Quality extended with **Foundry Evaluation SDK groundedness/relevance score** (nightly rollup of §4.1's sampled continuous scoring) and **Content Safety gate trigger rate** (added 2026-08-12 — `lld.md` §4.5, `PRD.md` §8)
 - [ ] `metric_snapshots` job extended to write **User Trust** metrics: buyer accept rate, substitution acceptance rate, PO modification rate, override rate by SKU, buyer NPS, explainability survey rating, and the new Why-panel engagement rate (`<UserTrustPanel>`) — this requires instrumenting the buyer-facing app to actually log Why-panel opens, a small addition to FEATURE_3
 - [ ] Chain drill-down flow completed: explicit confirm step, `redactChainIdentity()`/reveal behavior, `admin_dashboard_access_log` row per drill-down verified via integration test
 - [ ] `metric_snapshots` job extended to write `compliance`-category metrics (P0/P1 incident counts, DEA/340B/DSCSA event counts)

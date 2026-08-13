@@ -335,7 +335,7 @@ admin_dashboard_access_log (id PK, admin_user_id FK, action, chain_id FK NULL, c
 
 | Category | What it answers | Refresh |
 |---|---|---|
-| **AI Quality** | Is the model actually good? Forecast MAPE/MAE/sMAPE, substitution appropriateness (pharmacist-rated), citation-grounding rate, calibration error, model-routing split (Sonnet/Opus %), HHH gate status per launch stage | Nightly |
+| **AI Quality** | Is the model actually good? Forecast MAPE/MAE/sMAPE, substitution appropriateness (pharmacist-rated), citation-grounding rate, calibration error, model-routing split (Sonnet/Opus %), HHH gate status per launch stage, **Azure AI Foundry Evaluation SDK groundedness/relevance score (nightly rollup of sampled live calls, added 2026-08-12 — `lld.md` §4.5, `PRD.md` §8)**, **Content Safety gate trigger rate (how often a substitution routes to pharmacist review for failing groundedness, distinct from the Schedule II hard-block rate)** | Nightly |
 | **User Trust** | Do buyers actually believe the output? Buyer accept rate, substitution acceptance rate, PO modification rate, override rate by SKU, buyer NPS, explainability survey rating, Why-panel engagement rate | Nightly |
 | **Business** | Is the product delivering the ROI it was sold on? North Star (Net OOS Hours/1K Rx), stockout/working-capital/expiration reduction, buyer time saved, PO accuracy, savings-to-date | Nightly |
 | **Platform** *(live, where applicable)* | Is the system actually up right now? Current status, nightly batch success rate, EDI/VAN connectivity, active incident count, API uptime, real-time shortage-alert latency | **Live** — fetched at request time, not stored history |

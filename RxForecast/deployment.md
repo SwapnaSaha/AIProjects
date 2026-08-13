@@ -15,6 +15,7 @@ Nothing in §2 can start until every item here is checked. This is the "do you a
 - [ ] Domain ownership for `rxforecast.com` (or the actual production domain) with DNS access for Azure Front Door cutover
 - [ ] Microsoft BAA (HIPAA) executed — **must be signed before any real chain data is ingested**, not just before launch
 - [ ] Anthropic/Azure AI Foundry access confirmed for Claude model deployments (Sonnet + Opus) in the target region
+- [ ] Azure AI Content Safety and Foundry Evaluation SDK access confirmed in the target region (added 2026-08-12) — separate resource enablement from the Foundry model catalog, check both, don't assume one implies the other
 - [ ] GitHub organization with Actions enabled, branch protection configured on `main`
 - [ ] Datadog and Prefect Cloud accounts provisioned, API keys generated
 - [ ] Pilot chain's distributor VAN credentials (AS2 certificate/endpoint for McKesson) obtained through a signed data-sharing agreement
@@ -32,7 +33,7 @@ Terraform must apply in dependency order, not as one flat `terraform apply` — 
 
 1. **Networking** (`modules/networking`): VNet, subnets (edge / Container Apps / data), NSGs, private DNS zones
 2. **Data layer** (`modules/postgres`, `modules/cosmos`, `modules/storage`, `modules/keyvault`): Postgres Flexible Server (zone-redundant), Cosmos DB account, Blob Storage account + 3 containers, Key Vault — all with private endpoints into the data subnet, no public network access enabled
-3. **AI layer** (`modules/ai-foundry`): Azure AI Foundry project, Claude Sonnet + Opus model deployments, Azure AI Search service + indexes (empty at this point), Azure AI Document Intelligence resource
+3. **AI layer** (`modules/ai-foundry`): Azure AI Foundry project, Claude Sonnet + Opus model deployments, Azure AI Search service + indexes (empty at this point), Azure AI Document Intelligence resource, Azure AI Content Safety resource (added 2026-08-12 — feeds the groundedness gate, `lld.md` §4.5)
 4. **Registry** (`modules/acr`): Azure Container Registry — needed before compute since Container Apps pull images from here
 5. **Compute** (`modules/container-apps`): Container Apps Environment (VNet-integrated), then the individual Container Apps/Jobs — created but not yet serving traffic (no images pushed yet)
 6. **Edge** (`modules/front-door`, `modules/static-web-apps`): Azure Front Door, Static Web Apps — applied last since they route to compute that must already exist
@@ -43,7 +44,7 @@ Terraform must apply in dependency order, not as one flat `terraform apply` — 
 
 - [ ] Key Vault populated: Postgres connection details (or confirm Azure AD auth is used instead — see `lld.md` §3.3, no password needed), Entra External ID / WorkOS client credentials, distributor VAN certificates, Datadog/Prefect API keys, and a **separate read-only** Datadog API key scoped only to the metrics `GET /api/admin/platform-status` needs (`engg.md` FEATURE_9, `lld.md` §3.2.2) — not the same key used for writing logs/traces, so a leak of one can't be used to tamper with the other
 - [ ] A **system-assigned Managed Identity** created per Container App — not a shared identity across services (least privilege: `edi-transmission-service`'s identity should not be able to read `agent-orchestrator`'s Foundry access, for example)
-- [ ] RBAC role assignments scoped per identity: `api-service` → Key Vault Secrets User + Postgres db role; `agent-orchestrator` → Foundry access + Azure AI Search + Cosmos DB + Postgres; `edi-ingestion-service`/`edi-transmission-service` → Blob Storage (`edi-raw` container only) + Postgres + Key Vault (VAN credentials only)
+- [ ] RBAC role assignments scoped per identity: `api-service` → Key Vault Secrets User + Postgres db role; `agent-orchestrator` → Foundry access + Content Safety access (added 2026-08-12) + Azure AI Search + Cosmos DB + Postgres; `edi-ingestion-service`/`edi-transmission-service` → Blob Storage (`edi-raw` container only) + Postgres + Key Vault (VAN credentials only)
 - [ ] Verify no identity has subscription-level Owner/Contributor — every role assignment is resource-scoped
 
 ### 2.3 Database bootstrap
@@ -173,6 +174,7 @@ The admin metrics dashboard (`engg.md` FEATURE_9, `lld.md` §3.2.1) is the highe
 ### 3.7 Third-party/vendor security
 
 - [ ] Anthropic's data-handling terms confirmed (no training on RxForecast's prompts/completions) via the Azure AI Foundry agreement, not assumed from Anthropic's general consumer terms
+- [ ] Azure AI Content Safety and Foundry Evaluation SDK data-handling terms confirmed separately (added 2026-08-12) — these services see the same substitution rationale text as the Claude call itself, so the same no-training/no-retention confirmation applies here, not just to the model call
 - [ ] Prefect Cloud and Datadog reviewed for their own SOC 2/compliance posture (both are receiving operational metadata — `chain_id`, `run_id`, timing data — never PHI, but still worth a vendor security review before go-live)
 - [ ] Distributor VAN connections (AS2) use MDN-acknowledged, encrypted transport — not a bare unencrypted SFTP fallback in production, even though `lld.md` §5.1 lists SFTP as an available fallback for distributors that don't support AS2
 
@@ -190,7 +192,7 @@ Two distinct audiences, two distinct surfaces — don't conflate them:
 | Dashboard | Contents |
 |---|---|
 | **Service health** | p50/p95/p99 latency and error rate per Container App, replica count, autoscale events |
-| **Agent pipeline** | LangGraph node duration per node type, Prefect flow success/failure rate, Foundry call latency and token usage, model-routing split (Sonnet vs. Opus %, should track the ~5% escalation target) |
+| **Agent pipeline** | LangGraph node duration per node type, Prefect flow success/failure rate, Foundry call latency and token usage, model-routing split (Sonnet vs. Opus %, should track the ~5% escalation target), Content Safety groundedness gate trigger rate, Evaluation SDK sampled-score trend (added 2026-08-12 — `lld.md` §4.5) |
 | **EDI health** | Inbound/outbound transaction volume per type (846/850/855/856/860/869/997), parse failure rate, dead-letter queue depth, VAN connectivity uptime, 997-missing-within-4hrs count |
 | **Business metrics (engineering mirror)** | Same underlying numbers as FEATURE_9 (forecast MAPE, buyer accept rate, substitution acceptance rate, stockout trend, PO modification rate), fed by the same nightly export job — kept here too so on-call can correlate a metric regression with a specific deploy/incident without needing admin-portal access. FEATURE_9 remains the authoritative, audited, cross-chain product view; this is a debugging convenience, not a duplicate source of truth. |
 | **Security** | Failed login attempts, MFA challenges, `an-critical` hard-block trigger count (should be non-zero and expected, not an anomaly — but a sudden spike is worth investigating), cross-tenant access-attempt test results, `admin_dashboard_access_log` volume/pattern (an unusual spike in drill-downs by one admin account is itself worth a look) |

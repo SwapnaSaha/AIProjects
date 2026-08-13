@@ -228,6 +228,7 @@ Every recommendation must cite:
 - **Constitutional / explicit safety rules** — hardcoded constraints: no Schedule II auto-substitution; no narrow-therapeutic-index swaps without flag; no expired-stock recommendation; no formulary violation; no 340B/non-340B inventory commingling.
 - **Self-consistency safety pass** — every substitution proposal runs through a second LLM pass (with a safety-only system prompt) before reaching the buyer. Discrepancies escalate to pharmacist review.
 - **Structured output enforcement** — strict JSON schema (Pydantic-validated); off-schema responses trigger retry-with-correction, not silent pass-through.
+- **Groundedness detection (added 2026-08-12)** — every substitution rationale is scored by Azure AI Content Safety's groundedness API against its actual retrieved grounding documents (TE code, contract record, DEA schedule) before the self-consistency pass; a below-threshold score routes to pharmacist review, same as any other discrepancy. Aimed specifically at the case the other controls don't cover: a fabricated NDC, dosage, or price embedded in an otherwise well-formed, schema-valid rationale. Detail: `lld.md` §4.5.
 
 ---
 
@@ -251,6 +252,10 @@ Live A/B test in beta: 50% of stores see agent recommendations, 50% remain on ba
 ### Monitoring
 
 Live dashboard tracking forecast drift (rolling 14-day MAPE), buyer accept rate, override patterns, substitution outcomes, PO accuracy. Drift triggers retraining. Substitution acceptance below 65% triggers a model review. Any clinically flagged substitution triggers a P1 incident.
+
+### Continuous production evaluation (added 2026-08-12)
+
+The offline evals and 200-case pharmacist panel above remain the system of record for whether the model is *good* — that judgment is domain-specific and stays a custom harness. Azure AI Foundry's Evaluation SDK adds a layer those offline runs can't: continuous groundedness/relevance scoring on a sample of live Substitution Reasoner and Shortage Watcher calls, not a periodic batch. Scores roll up nightly into the AI Quality metric category (`engg.md` FEATURE_9); a below-threshold single call is logged into the weekly HHH_Eval review rather than triggering any runtime action on its own — that gating already happens via the groundedness detection control in §7. Detail: `lld.md` §4.5.
 
 ### Annual safety review
 
@@ -381,7 +386,8 @@ Medium — 6 months to MVP at pilot chain. Pilot signed by month 1; integration 
 | Datadog | ~$400/mo | Unchanged — cloud-agnostic SaaS | ~$400/mo |
 | Container registry, source control, CDN/DNS | ~$65/mo (Docker Hub, GitHub, DNS/CDN) | Container Registry + GitHub + Front Door base + Static Web Apps | ~$70–110/mo |
 | SSO (not separately costed originally) | — | Microsoft Entra External ID | ~$0–50/mo (pilot-scale MAU likely within the free tier) |
-| **Infra subtotal** | **~$6,200/mo** | | **~$5,900–7,000/mo** |
+| Content Safety + Evaluation SDK (added 2026-08-12) | — | Azure AI Content Safety + Foundry Evaluation SDK | **Not yet priced** — new addition, not folded into the subtotal below; needs a real number once Evaluation SDK sampling rate (`lld.md` §12.9) is set |
+| **Infra subtotal** | **~$6,200/mo** | | **~$5,900–7,000/mo** (excludes the unpriced Content Safety/Evaluation SDK line above) |
 | Customer Success + model maintenance (allocated) | ~$2,000/mo | Unchanged | ~$2,000/mo |
 | **Total run cost per chain** | **~$8,200/mo** | | **~$7,900–9,000/mo** |
 
