@@ -3,9 +3,22 @@
 import { loadDemoData } from './data/loader.js';
 import { buildForecastIndex } from './lib/forecasting.js';
 import { buildLiveSubstitutions } from './lib/substitution.js';
+import { isShortageFeedEnabled, shortageFeedPollMinutes, fetchLiveShortages } from './lib/shortageFeed.js';
 import { state } from './data/state.js';
 
 export const ctx = {};
+
+// Re-fetches openFDA and rebuilds ctx.shortages + state.substitutions from it — pulled
+// out of initContext() so both the initial load and the recurring poller (below) share
+// the exact same logic, not two slightly-different copies of it.
+async function refreshLiveShortages(data) {
+  const liveShortages = await fetchLiveShortages(data.formulary.map(f => f.ndc));
+  ctx.shortages = liveShortages;
+  ctx.usingLiveShortageFeed = true;
+  state.substitutions = await buildLiveSubstitutions(liveShortages, data.formulary, data.contracts, data.stores);
+  console.log(`[shortageFeed] openFDA poll: ${liveShortages.length} live shortage(s) matched against the ` +
+    `${data.formulary.length}-NDC loaded formulary — see shortageFeed.js's header comment: this synthetic formulary's NDCs are fictional (verified against the real NDC Directory), so 0 is the expected, correct result here regardless of formulary size.`);
+}
 
 export async function initContext() {
   console.log('[boot] loading synthetic dataset (trimmed demo subset)...');
@@ -27,8 +40,21 @@ export async function initContext() {
   // deployment per option when FOUNDRY_ENDPOINT is configured (substitution.js).
   state.substitutions = await buildLiveSubstitutions(data.shortages, data.formulary, data.contracts, data.stores);
   state.overridesActive = [...data.overrides];
+  ctx.usingLiveShortageFeed = false;
 
   console.log(`[boot] loaded ${data.stores.length} stores, ${data.formulary.length} NDCs (demo subset), ` +
     `${data.dispense.length} dispense rows, ${data.shortages.length} active shortages, ` +
     `${state.substitutions.length} live substitution recommendations.`);
+
+  // Live shortage polling (added 2026-08-14) — off by default, see shortageFeed.js.
+  // Replaces the synthetic ctx.shortages entirely when on, and re-polls on an interval,
+  // same "flag it, don't fake it" pattern as everything else in this prototype.
+  if (isShortageFeedEnabled()) {
+    console.log(`[shortageFeed] SHORTAGE_FEED_ENABLED=true — polling openFDA every ${shortageFeedPollMinutes()} min. ` +
+      'This REPLACES the synthetic shortage list with real live data (GAPS.md "Data scope" still applies).');
+    await refreshLiveShortages(data);
+    setInterval(() => {
+      refreshLiveShortages(data).catch(err => console.error('[shortageFeed] poll failed:', err.message));
+    }, shortageFeedPollMinutes() * 60 * 1000);
+  }
 }

@@ -49,6 +49,7 @@ export const api = {
   rejectQueueItem: (key: string, reason: string) => request(`/queue/${encodeURIComponent(key)}/reject`, { method: 'POST', body: JSON.stringify({ reason }) }),
   getForecast: (storeId: string, ndc: string) => request<ForecastResponse>(`/forecast/${storeId}/${ndc}`),
   getShortages: (status?: string) => request<Shortage[]>(`/shortages${status ? `?status=${status}` : ''}`),
+  getShortageFeedStatus: () => request<{ liveFeedActive: boolean; shortageCount: number }>('/shortages/feed-status'),
   getSubstitutions: (shortageId: string) => request<Substitution[]>(`/shortages/${shortageId}/substitutions`),
   decideSubstitution: (id: string, decision: 'accept' | 'reject', altNdc?: string) =>
     request<Substitution>(`/substitutions/${id}/decision`, { method: 'POST', body: JSON.stringify({ decision, altNdc }) }),

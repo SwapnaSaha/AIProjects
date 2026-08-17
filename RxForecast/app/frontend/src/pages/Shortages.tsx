@@ -9,16 +9,26 @@ const SEVERITY_TONE: Record<string, 'error' | 'warning'> = {
 
 export default function Shortages() {
   const { data: shortages, isLoading } = useQuery({ queryKey: ['shortages', 'current'], queryFn: () => api.getShortages('current') });
+  const { data: feedStatus } = useQuery({ queryKey: ['shortages', 'feed-status'], queryFn: api.getShortageFeedStatus, refetchInterval: 60_000 });
 
   return (
     <div>
       <h1 className="text-2xl font-semibold mb-1">Shortage Alerts</h1>
       <p className="text-sm text-an-fg-subtle mb-4">
         Mapped to your formulary from FDA/ASHP feeds, with proposed substitutes.{' '}
-        <span className="text-an-fg-muted">(This prototype re-presents a sample of historical shortage records as active for demo purposes — see GAPS.md.)</span>
+        {feedStatus?.liveFeedActive ? (
+          <span className="text-an-fg-muted">(Live openFDA feed active — this synthetic demo formulary uses fictional NDCs, so 0 results here is expected; see GAPS.md.)</span>
+        ) : (
+          <span className="text-an-fg-muted">(This prototype re-presents a sample of historical shortage records as active for demo purposes — see GAPS.md.)</span>
+        )}
       </p>
       {isLoading && <Spinner />}
-      {shortages && shortages.length === 0 && <EmptyState>No active shortages affecting your formulary.</EmptyState>}
+      {shortages && shortages.length === 0 && (
+        <EmptyState>
+          No active shortages affecting your formulary.
+          {feedStatus?.liveFeedActive && ' (Live FDA feed — expected with this demo’s fictional NDCs.)'}
+        </EmptyState>
+      )}
       <div className="space-y-3">
         {shortages?.map(s => <ShortageCard key={s.id} shortage={s} />)}
       </div>

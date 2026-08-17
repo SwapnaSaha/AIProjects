@@ -14,7 +14,22 @@ router.get('/', (req, res) => {
   const status = req.query.status;
   let list = ctx.shortages;
   if (status) list = list.filter(s => s.status.toLowerCase() === status.toLowerCase());
-  res.json(list.map(s => ({ ...s, bulletinExcerpt: bulletinExcerpt(s.bulletinId) })));
+  res.json(list.map(s => ({
+    ...s,
+    // Live results (shortageFeed.js) carry their own liveDetailText instead of a
+    // synthetic bulletinId — no CSV blob to excerpt from.
+    bulletinExcerpt: s.liveDetailText || bulletinExcerpt(s.bulletinId),
+  })));
+});
+
+// Diagnostic endpoint, not used by the frontend yet — lets you confirm from the outside
+// (curl, or a future UI badge) whether the shortage list currently in memory came from
+// the live openFDA poll or the synthetic CSV fallback.
+router.get('/feed-status', (req, res) => {
+  res.json({
+    liveFeedActive: Boolean(ctx.usingLiveShortageFeed),
+    shortageCount: ctx.shortages.length,
+  });
 });
 
 router.get('/:id/substitutions', (req, res) => {
