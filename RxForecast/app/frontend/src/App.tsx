@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from './state/auth';
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Queue from './pages/Queue';
 import Shortages from './pages/Shortages';
@@ -8,6 +9,7 @@ import Audit from './pages/Audit';
 import Dashboard from './pages/Dashboard';
 
 type View = 'queue' | 'shortages' | 'overrides' | 'audit' | 'dashboard';
+type PreAuthView = 'landing' | 'login';
 
 const NAV: { id: View; label: string; roles: string[] }[] = [
   { id: 'queue', label: 'Reorder Queue', roles: ['buyer', 'pic'] },
@@ -20,6 +22,7 @@ const NAV: { id: View; label: string; roles: string[] }[] = [
 function App() {
   const { user, logout } = useAuth();
   const [view, setView] = useState<View>('queue');
+  const [preAuthView, setPreAuthView] = useState<PreAuthView>('landing');
 
   useEffect(() => {
     if (!user) return;
@@ -28,7 +31,13 @@ function App() {
     else setView('queue');
   }, [user]);
 
-  if (!user) return <Login />;
+  if (!user) {
+    // No router in this prototype (react-router was deliberately removed — see GAPS.md);
+    // this mirrors the same state-based view switching the authenticated app already
+    // uses below, just for the two pre-auth screens.
+    if (preAuthView === 'landing') return <Landing onExplore={() => setPreAuthView('login')} />;
+    return <Login onBack={() => setPreAuthView('landing')} />;
+  }
 
   const visibleNav = NAV.filter(n => n.roles.includes(user.role));
 
