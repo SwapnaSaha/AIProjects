@@ -99,7 +99,7 @@ export default function Login({ onBack }: { onBack?: () => void }) {
           <button onClick={onBack} className="text-xs text-an-fg-subtle hover:text-an-fg-base mb-4">← Back</button>
         )}
         <div className="mb-2 text-xs font-mono uppercase tracking-widest text-an-accent">RxForecast — Prototype</div>
-        <h1 className="text-3xl font-semibold mb-2" style={{ fontFamily: 'Lora, Georgia, serif' }}>Sign in</h1>
+        <h1 className="text-3xl font-semibold mb-2" style={{ fontFamily: 'Lora, Georgia, serif' }}>Persona Selector</h1>
         <p className="text-an-fg-subtle text-sm mb-6">
           This demo has no real password/SSO — pick a role to see RxForecast from that persona's view.
           Each persona has genuinely different access, not just a different label — expand a role to see what it

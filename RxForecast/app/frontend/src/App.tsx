@@ -32,19 +32,28 @@ function App() {
   const [view, setView] = useState<View>('queue');
   const [hasEntered, setHasEntered] = useState(() => sessionStorage.getItem(ENTERED_KEY) === 'true');
 
-  // Sign-out always returns to Landing, not Login — clearing hasEntered (not just the
-  // auth session) is what makes that happen, same flag the fresh-invocation check reads.
+  // Sign-out returns to the persona selector (Login), not all the way back to Landing —
+  // hasEntered/sessionStorage is deliberately left untouched here, so the app falls
+  // straight to the `!user` branch below. Landing is only for a genuinely fresh
+  // invocation (see ENTERED_KEY's comment) or the explicit "← Back" link on Login.
   function handleSignOut() {
     logout();
-    sessionStorage.removeItem(ENTERED_KEY);
-    setHasEntered(false);
   }
 
   useEffect(() => {
     if (!user) return;
     if (user.role === 'director') setView('dashboard');
     else if (user.role === 'compliance') setView('audit');
-    else setView('queue');
+    else {
+      // Was hardcoded to 'queue' for every other role — broke for pharmacist (found
+      // 2026-08-17 during a full click-through): pharmacist's only NAV entry is
+      // 'shortages', so they landed on a Queue view with no matching nav button and
+      // could act on it, directly contradicting what Login.tsx documents as off-limits
+      // to that persona. Deriving the default from NAV itself means this can't drift
+      // out of sync again if NAV's role lists ever change.
+      const firstAllowed = NAV.find(n => n.roles.includes(user.role));
+      setView(firstAllowed?.id ?? 'queue');
+    }
   }, [user]);
 
   // No router in this prototype (react-router was deliberately removed — see GAPS.md);
