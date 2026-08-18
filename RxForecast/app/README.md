@@ -1,6 +1,6 @@
 # RxForecast — Prototype
 
-A working prototype of the predictive EDI ordering agent, built to demo the concept to customers and gather feedback. See **[GAPS.md](./GAPS.md)** for exactly what's real vs. simulated here versus the full production spec (`../PRD.md`, `../engg.md`, `../lld.md`, `../deployment.md`), and **[reorder.md](./reorder.md)** for exactly how every number and badge on the Reorder Queue is computed.
+A working prototype of the predictive EDI ordering agent, built to demo the concept to customers and gather feedback. See **[GAPS.md](./GAPS.md)** for exactly what's real vs. simulated here versus the full production spec (`../PRD.md`, `../engg.md`, `../lld.md`, `../deployment.md`), **[reorder.md](./reorder.md)** for exactly how every number and badge on the Reorder Queue is computed, and **[dashboard.md](./dashboard.md)** for the same on the Director Dashboard.
 
 ## Run it
 
