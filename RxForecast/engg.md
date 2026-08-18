@@ -308,7 +308,7 @@ admin_dashboard_access_log (id PK, admin_user_id FK, action, chain_id FK NULL, c
 
 - **Description:** Roll-up view for the Director of Supply Chain — stockout rate, working capital, expiration trend, savings to date — the ROI-proof surface for the COO.
 - **User Flow:** Director opens Dashboard → sees weekly-refreshed KPI tiles + trend charts → drills into any metric by store or category → exports a summary for board reporting.
-- **Placement:** `/dashboard` — default landing page for the director role (buyers land on Feature 1's Queue instead).
+- **Placement:** `/dashboard` — default landing page for the director role. **Nav-gated to director only** (clarified 2026-08-17): a buyer has no nav entry to this page at all, not just a different default landing page — the prototype's nav briefly allowed buyer access as an inconsistency, since corrected to match this spec.
 - **Design:** Design system's **KPI Stat Tile** component in a row at top (North Star metric uses `an-accent` for its value, per the KPI Stat Tile spec), trend charts below colored per Semantic Color Usage, store/category breakout as a **Data Table**.
 
 **02. Data & Backend**

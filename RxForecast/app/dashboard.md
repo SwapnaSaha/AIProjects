@@ -16,6 +16,8 @@ Everything on this page comes from **one endpoint**, `GET /api/dashboard/summary
 
 **No history, by design and clearly labeled:** the response includes `isSnapshotOnly: true`, and the page itself says so ("Snapshot only — no week-over-week trend in this prototype"). There's no database in this build, so there's no pre-agent baseline to trend against — see §5.
 
+**Access: director role only** (corrected 2026-08-17 — `App.tsx`'s nav previously also showed this to the buyer role, an inconsistency with `engg.md` FEATURE_8's own spec, which always scoped this page to the Director of Supply Chain). A buyer has no nav entry to `/dashboard` at all now, not merely a different default landing page.
+
 ---
 
 ## 2. The four KPI tiles

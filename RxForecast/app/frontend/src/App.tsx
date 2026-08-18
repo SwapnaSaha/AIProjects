@@ -21,13 +21,24 @@ const NAV: { id: View; label: string; roles: string[] }[] = [
   { id: 'shortages', label: 'Shortages', roles: ['buyer', 'pic', 'pharmacist'] },
   { id: 'overrides', label: 'Rules', roles: ['buyer'] },
   { id: 'audit', label: 'Audit Trail', roles: ['compliance', 'director'] },
-  { id: 'dashboard', label: 'Dashboard', roles: ['director', 'buyer'] },
+  // Director-only (added 2026-08-17) — engg.md FEATURE_8 always scoped this to the
+  // Director of Supply Chain role; buyer access here was a prototype inconsistency,
+  // not an intentional deviation, now corrected to match the spec.
+  { id: 'dashboard', label: 'Dashboard', roles: ['director'] },
 ];
 
 function App() {
   const { user, logout } = useAuth();
   const [view, setView] = useState<View>('queue');
   const [hasEntered, setHasEntered] = useState(() => sessionStorage.getItem(ENTERED_KEY) === 'true');
+
+  // Sign-out always returns to Landing, not Login — clearing hasEntered (not just the
+  // auth session) is what makes that happen, same flag the fresh-invocation check reads.
+  function handleSignOut() {
+    logout();
+    sessionStorage.removeItem(ENTERED_KEY);
+    setHasEntered(false);
+  }
 
   useEffect(() => {
     if (!user) return;
@@ -70,7 +81,7 @@ function App() {
         <div className="px-4 py-4 border-t border-an-border">
           <div className="text-sm">{user.name}</div>
           <div className="text-xs text-an-fg-muted capitalize mb-2">{user.role}{user.storeId ? ` · ${user.storeId}` : ''}</div>
-          <button onClick={logout} className="text-xs text-an-fg-subtle underline">Sign out</button>
+          <button onClick={handleSignOut} className="text-xs text-an-fg-subtle underline">Sign out</button>
         </div>
       </aside>
       <main className="flex-1 overflow-y-auto p-6">

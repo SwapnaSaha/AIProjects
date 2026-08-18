@@ -158,7 +158,7 @@ colors: {
 ### Sidebar
 
 - Top: Logo + "RxForecast" wordmark (24px padding)
-- Nav items (fixed list, not scrollable): Reorder Queue, Shortages, Rules, Audit Trail *(compliance/director only)*, Dashboard *(director default landing)* — Forecast view has no direct nav entry, reached via Queue/search
+- Nav items (fixed list, not scrollable): Reorder Queue, Shortages, Rules, Audit Trail *(compliance/director only)*, Dashboard *(director only, also the default landing page — clarified 2026-08-17, matches `engg.md` FEATURE_8)* — Forecast view has no direct nav entry, reached via Queue/search
 - Each item: icon (Lucide, 20px) + label + optional count badge (unread shortages, queue size)
 - Bottom: user avatar + name + role + logout (pinned, 16px padding)
 

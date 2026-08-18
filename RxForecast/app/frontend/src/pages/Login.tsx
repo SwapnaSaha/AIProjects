@@ -17,11 +17,11 @@ const ROLES = [
       'Edit recommended quantities, defer, or reject queue items',
       'Review shortage alerts and accept/reject substitute recommendations',
       'Create and manage persistent buyer override rules',
-      'View the chain-wide ROI/KPI dashboard',
     ],
     cannotDo: [
       'Approve a Schedule II substitution — always hard-blocked, routed to pharmacist review',
       'View the compliance audit trail',
+      'View the ROI/KPI dashboard — director-only (engg.md FEATURE_8)',
     ],
   },
   {
