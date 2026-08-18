@@ -9,7 +9,12 @@ import Audit from './pages/Audit';
 import Dashboard from './pages/Dashboard';
 
 type View = 'queue' | 'shortages' | 'overrides' | 'audit' | 'dashboard';
-type PreAuthView = 'landing' | 'login';
+
+// sessionStorage (not localStorage) is the point: cleared when the tab/window closes, so
+// a genuinely fresh invocation of the app always lands on the marketing page first — even
+// if a valid session is still sitting in localStorage — but a same-tab page refresh
+// mid-session doesn't force a detour back through Landing/Login every time.
+const ENTERED_KEY = 'rxf_entered_session';
 
 const NAV: { id: View; label: string; roles: string[] }[] = [
   { id: 'queue', label: 'Reorder Queue', roles: ['buyer', 'pic'] },
@@ -22,7 +27,7 @@ const NAV: { id: View; label: string; roles: string[] }[] = [
 function App() {
   const { user, logout } = useAuth();
   const [view, setView] = useState<View>('queue');
-  const [preAuthView, setPreAuthView] = useState<PreAuthView>('landing');
+  const [hasEntered, setHasEntered] = useState(() => sessionStorage.getItem(ENTERED_KEY) === 'true');
 
   useEffect(() => {
     if (!user) return;
@@ -31,12 +36,15 @@ function App() {
     else setView('queue');
   }, [user]);
 
+  // No router in this prototype (react-router was deliberately removed — see GAPS.md);
+  // this mirrors the same state-based view switching the authenticated app already uses
+  // below, just for the two pre-auth screens.
+  if (!hasEntered) {
+    return <Landing onExplore={() => { sessionStorage.setItem(ENTERED_KEY, 'true'); setHasEntered(true); }} />;
+  }
+
   if (!user) {
-    // No router in this prototype (react-router was deliberately removed — see GAPS.md);
-    // this mirrors the same state-based view switching the authenticated app already
-    // uses below, just for the two pre-auth screens.
-    if (preAuthView === 'landing') return <Landing onExplore={() => setPreAuthView('login')} />;
-    return <Login onBack={() => setPreAuthView('landing')} />;
+    return <Login onBack={() => { sessionStorage.removeItem(ENTERED_KEY); setHasEntered(false); }} />;
   }
 
   const visibleNav = NAV.filter(n => n.roles.includes(user.role));

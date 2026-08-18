@@ -74,10 +74,12 @@ export default function Queue() {
     if (draft === undefined) return false;
     return Number(draft) !== (qtySaved[row.key] ?? row.recommendedQty);
   }
-  function saveQty(row: QueueRow) {
-    const val = Number(draftValue(row));
+  function saveQtyFor(key: string, val: number) {
     if (!Number.isFinite(val) || val < 0) return;
-    setQtySaved(prev => ({ ...prev, [row.key]: val }));
+    setQtySaved(prev => ({ ...prev, [key]: val }));
+  }
+  function saveQty(row: QueueRow) {
+    saveQtyFor(row.key, Number(draftValue(row)));
     setQtyDraft(prev => { const next = { ...prev }; delete next[row.key]; return next; });
   }
 
@@ -232,14 +234,31 @@ export default function Queue() {
         </div>
       )}
 
-      {selectedKey && <QueueDetailDrawer queueKey={selectedKey} onClose={() => setSelectedKey(null)} onActed={() => { refetch(); setSelectedKey(null); }} />}
+      {selectedKey && (
+        <QueueDetailDrawer
+          queueKey={selectedKey}
+          savedQty={qtySaved[selectedKey]}
+          onSaveQty={val => saveQtyFor(selectedKey, val)}
+          onClose={() => setSelectedKey(null)}
+          onActed={() => { refetch(); setSelectedKey(null); }}
+        />
+      )}
     </div>
   );
 }
 
-function QueueDetailDrawer({ queueKey, onClose, onActed }: { queueKey: string; onClose: () => void; onActed: () => void }) {
+function QueueDetailDrawer({ queueKey, savedQty, onSaveQty, onClose, onActed }: {
+  queueKey: string;
+  savedQty: number | undefined;
+  onSaveQty: (qty: number) => void;
+  onClose: () => void;
+  onActed: () => void;
+}) {
   const [storeId, ndc] = queueKey.split('|');
-  const [qtyOverride, setQtyOverride] = useState<string>('');
+  // Pre-fills from the row-level saved override (if the user already saved one from the
+  // queue table) rather than always starting blank — otherwise opening the drawer for a
+  // row you already edited-and-saved would silently discard that edit from view.
+  const [qtyOverride, setQtyOverride] = useState<string>(savedQty !== undefined ? String(savedQty) : '');
   const [rejectReason, setRejectReason] = useState('');
   const [showReject, setShowReject] = useState(false);
   const [confirmOverride, setConfirmOverride] = useState(false);
@@ -312,16 +331,36 @@ function QueueDetailDrawer({ queueKey, onClose, onActed }: { queueKey: string; o
           ) : !po ? (
             <div>
               <div className="text-[11px] uppercase tracking-wide text-an-fg-subtle mb-2">Recommended order</div>
-              <div className="flex items-center gap-2 mb-2">
-                <input
-                  type="number"
-                  min={0}
-                  value={qtyOverride !== '' ? qtyOverride : String(detail.recommendedQty)}
-                  onChange={e => { setQtyOverride(e.target.value); setConfirmOverride(false); setError(null); }}
-                  className={`h-9 px-3 rounded-md border text-sm w-full ${qtyOverride !== '' ? 'bg-an-bg-surface border-an-border text-an-fg-base' : 'bg-an-bg-subtle border-an-border text-an-fg-subtle'}`}
-                />
-                <span className="text-xs text-an-fg-subtle whitespace-nowrap">units</span>
-              </div>
+              {(() => {
+                const currentVal = Number(qtyOverride !== '' ? qtyOverride : detail.recommendedQty);
+                const baseline = savedQty ?? detail.recommendedQty;
+                const dirty = currentVal !== baseline;
+                const saved = savedQty !== undefined && !dirty;
+                return (
+                  <div className="flex items-center gap-2 mb-2">
+                    <input
+                      type="number"
+                      min={0}
+                      value={qtyOverride !== '' ? qtyOverride : String(detail.recommendedQty)}
+                      onChange={e => { setQtyOverride(e.target.value); setConfirmOverride(false); setError(null); }}
+                      title={saved ? 'Saved override — will be used by bulk approve, or if you close this drawer without approving' : 'Agent-recommended quantity — editable'}
+                      className={`h-9 px-3 rounded-md border text-sm w-full ${qtyOverride !== '' ? 'bg-an-bg-surface border-an-border text-an-fg-base' : 'bg-an-bg-subtle border-an-border text-an-fg-subtle'}`}
+                    />
+                    <span className="text-xs text-an-fg-subtle whitespace-nowrap">units</span>
+                    <button
+                      className="text-xs text-an-accent disabled:text-an-fg-muted disabled:cursor-not-allowed whitespace-nowrap"
+                      disabled={!dirty || !Number.isFinite(currentVal) || currentVal < 0}
+                      onClick={() => onSaveQty(currentVal)}
+                    >
+                      Save
+                    </button>
+                    {saved && <span className="text-an-success text-xs" title="Saved override">✓</span>}
+                  </div>
+                );
+              })()}
+              <p className="text-xs text-an-fg-subtle mb-2">
+                Save keeps an edited quantity for later — without saving, closing this drawer discards the edit and the agent's recommendation is used if you approve from the queue table later.
+              </p>
               {error && (
                 <div className="text-xs text-an-error bg-an-error/10 rounded-md p-2 mb-2">
                   {error}

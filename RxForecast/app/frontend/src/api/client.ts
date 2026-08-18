@@ -36,6 +36,16 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const body = isJson ? await res.json() : await res.text();
   if (!res.ok) {
     const detail = (body && typeof body === 'object' && 'detail' in body) ? String((body as { detail: unknown }).detail) : res.statusText;
+    // A localStorage-cached token can outlive the backend's in-memory session store
+    // (e.g. after a dev-server restart, since sessions aren't persisted — see GAPS.md
+    // "Authentication"). Without this, every subsequent request 401s forever and the
+    // UI just spins on a loading state with no way out short of manually clearing
+    // storage. Clear the stale session and reload so the app falls back to Landing/Login.
+    if (res.status === 401) {
+      setAuthToken(null);
+      localStorage.removeItem('rxf_user');
+      window.location.reload();
+    }
     throw new ApiError(res.status, detail, body);
   }
   return body as T;
