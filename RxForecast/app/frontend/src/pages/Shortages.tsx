@@ -85,9 +85,23 @@ function SubstitutionRow({ sub }: { sub: Substitution }) {
     );
   }
 
+  if (sub.options.length === 0 && sub.ruleApplied?.type === 'never_substitute') {
+    return (
+      <div className="bg-an-bg-subtle rounded-md p-3">
+        <div className="text-sm font-medium mb-1">{sub.storeId} — {sub.originalGenericName}</div>
+        <div className="text-xs text-an-fg-subtle">
+          No substitutes offered — an active <Badge tone="accent">never substitute</Badge> rule blocks this drug (rationale: "{sub.ruleApplied.rationale}").
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-an-bg-subtle rounded-md p-3">
       <div className="text-sm font-medium mb-2">{sub.storeId} — {sub.originalGenericName}</div>
+      {sub.ruleApplied?.type === 'never_generic' && (
+        <div className="text-[11px] text-an-fg-subtle mb-2">Restricted to brand-name alternatives per an active <Badge tone="accent">never generic</Badge> rule.</div>
+      )}
       <div className="space-y-2">
         {sub.options.map(opt => (
           <div key={opt.altNdc} className={`text-xs rounded-md p-2 ${opt.blocked ? 'bg-an-critical/15 border border-an-critical' : 'bg-an-bg-surface'}`}>
@@ -111,7 +125,7 @@ function SubstitutionRow({ sub }: { sub: Substitution }) {
         </button>
       </div>
       {error && <div className="text-xs text-an-critical mt-2">{error}</div>}
-      <div className="text-[10px] text-an-fg-muted mt-2">Confidence: {(sub.confidence * 100).toFixed(0)}% · SIMULATED reasoning (see GAPS.md — production uses Claude via Azure AI Foundry)</div>
+      <div className="text-[10px] text-an-fg-muted mt-2">{sub.confidence != null ? `Confidence: ${(sub.confidence * 100).toFixed(0)}% · ` : ''}SIMULATED reasoning (see GAPS.md — production uses Claude via Azure AI Foundry)</div>
     </div>
   );
 }

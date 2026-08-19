@@ -1,6 +1,6 @@
 # RxForecast — Prototype
 
-A working prototype of the predictive EDI ordering agent, built to demo the concept to customers and gather feedback. See **[GAPS.md](./GAPS.md)** for exactly what's real vs. simulated here versus the full production spec (`../PRD.md`, `../engg.md`, `../lld.md`, `../deployment.md`), **[reorder.md](./reorder.md)** for exactly how every number and badge on the Reorder Queue is computed, **[dashboard.md](./dashboard.md)** for the same on the Director Dashboard, **[shortages.md](./shortages.md)** for the same on the Shortage Alerts page, and **[rule.md](./rule.md)** for the same on the Rules page — including an important gap: rules are stored/audited but not yet consulted by the forecasting/scoring/substitution logic.
+A working prototype of the predictive EDI ordering agent, built to demo the concept to customers and gather feedback. See **[GAPS.md](./GAPS.md)** for exactly what's real vs. simulated here versus the full production spec (`../PRD.md`, `../engg.md`, `../lld.md`, `../deployment.md`), **[reorder.md](./reorder.md)** for exactly how every number and badge on the Reorder Queue is computed, **[dashboard.md](./dashboard.md)** for the same on the Director Dashboard, **[shortages.md](./shortages.md)** for the same on the Shortage Alerts page, and **[rule.md](./rule.md)** for the same on the Rules page — 3 of 5 rule types now genuinely change agent behavior (`never_substitute`, `never_generic`, `custom_par_level`); 2 (the distributor-sourcing types) don't yet.
 
 ## Run it
 
@@ -34,9 +34,10 @@ Open `http://localhost:5173`, pick a role (no password — this is a prototype, 
 4. **Defer** a row, then sign out and sign back in as the same role — the row reappears (defer resurfaces on your next login in this demo, standing in for the real nightly-cycle resurfacing). **Reject** a different row with a reason — it stays gone even after signing back in, since a reject is a recorded decision, not a "later."
 5. **Shortages** — expand a card, try accepting a substitute; try the methylphenidate ER (Schedule II) card and note there's no accept option at all
 6. **Rules** — see the override that got auto-created from the substitution you accepted; **click any rule** to open its detail — full scope/rationale, a plain-language explanation of what that rule type does, and its audit history; try toggling Deactivate/Reactivate from inside the drawer and watch the history list update live
-7. Sign out, sign back in as **Pharmacist-in-Charge** → notice the Reorder Queue shows a "Store-locked: ST001" indicator instead of a store picker, and every row is that store only — this is enforced by the API, not just the UI (try editing the URL/query string, it still comes back scoped)
-8. Sign in as **Compliance Officer** → **Audit Trail** — see the full chain: approved → transmitted → acked → substitution decided → override created; **click any row** to open its detail — a plain-language explanation, the full structured payload, numbered citations, and (for PO-related entries) the linked raw X12 850/855
-9. Sign in as **Director** → **Dashboard** — real session-aggregated metrics
+7. **Create a `never_substitute` rule** for a drug with an active shortage, then go back to Shortages and expand that card — the substitute options are genuinely gone, replaced with a message citing the rule, no restart needed. Try `custom_par_level` on a Reorder Queue drug with a low target-days value too — the recommended qty visibly drops and a small "rule" tag appears next to it.
+8. Sign out, sign back in as **Pharmacist-in-Charge** → notice the Reorder Queue shows a "Store-locked: ST001" indicator instead of a store picker, and every row is that store only — this is enforced by the API, not just the UI (try editing the URL/query string, it still comes back scoped)
+9. Sign in as **Compliance Officer** → **Audit Trail** — see the full chain: approved → transmitted → acked → substitution decided → override created; **click any row** to open its detail — a plain-language explanation, the full structured payload, numbered citations, and (for PO-related entries) the linked raw X12 850/855
+10. Sign in as **Director** → **Dashboard** — real session-aggregated metrics
 
 ## Stack
 

@@ -5,6 +5,17 @@ import { Badge, Button, Card, Drawer, EmptyState, Spinner } from '../components/
 
 const TYPES = ['never_substitute', 'preferred_distributor', 'custom_par_level', 'never_generic', 'always_secondary_source'];
 
+// Which rule types actually change agent behavior in this build (wired 2026-08-19 — see
+// rule.md §5) vs. which are still stored/audited only. Shown in the create form so this
+// isn't a silent gap — matches how the rest of this prototype flags simulated vs. real.
+const WIRING_NOTE: Record<string, string> = {
+  never_substitute: 'Wired: the Substitution Reasoner offers zero alternatives for this drug at this scope.',
+  never_generic: 'Wired: the Substitution Reasoner only offers brand-name alternatives for this drug at this scope.',
+  custom_par_level: 'Wired: the target days-of-supply below replaces the inventory default when computing recommended order quantity.',
+  preferred_distributor: 'Not yet wired — stored and audited, but PO sourcing still always uses the default distributor. See GAPS.md.',
+  always_secondary_source: 'Not yet wired — stored and audited, but PO sourcing still always uses the default distributor. See GAPS.md.',
+};
+
 export default function Overrides() {
   const qc = useQueryClient();
   const { data: overrides, isLoading } = useQuery({ queryKey: ['overrides'], queryFn: api.getOverrides });
@@ -13,18 +24,24 @@ export default function Overrides() {
   const [ndc, setNdc] = useState('');
   const [type, setType] = useState(TYPES[0]);
   const [rationale, setRationale] = useState('');
+  const [parLevelDays, setParLevelDays] = useState('');
   const [conflictWarning, setConflictWarning] = useState<string | null>(null);
   const [selected, setSelected] = useState<Override | null>(null);
+
+  const needsParLevel = type === 'custom_par_level';
 
   const createMutation = useMutation({
     mutationFn: () => {
       const drug = formulary?.find(f => f.ndc === ndc);
-      return api.createOverride({ ndc, genericName: drug?.genericName, type, rationale });
+      return api.createOverride({
+        ndc, genericName: drug?.genericName, type, rationale,
+        parLevelDays: needsParLevel ? Number(parLevelDays) : undefined,
+      });
     },
     onSuccess: (res) => {
       qc.invalidateQueries({ queryKey: ['overrides'] });
       setConflictWarning(res.conflictWarning);
-      if (!res.conflictWarning) { setShowForm(false); setNdc(''); setRationale(''); }
+      if (!res.conflictWarning) { setShowForm(false); setNdc(''); setRationale(''); setParLevelDays(''); }
     },
   });
 
@@ -51,10 +68,24 @@ export default function Overrides() {
             <select value={type} onChange={e => setType(e.target.value)} className="h-9 px-3 rounded-md bg-an-bg-elevated border border-an-border text-sm">
               {TYPES.map(t => <option key={t} value={t}>{t.replace(/_/g, ' ')}</option>)}
             </select>
+            <div className="text-xs text-an-fg-subtle -mt-1">{WIRING_NOTE[type]}</div>
+            {needsParLevel && (
+              <input
+                type="number" min={1} placeholder="Target days of supply (required)"
+                value={parLevelDays} onChange={e => setParLevelDays(e.target.value)}
+                className="h-9 px-3 rounded-md bg-an-bg-elevated border border-an-border text-sm"
+              />
+            )}
             <textarea placeholder="Rationale (required — this is the explainability source)" value={rationale} onChange={e => setRationale(e.target.value)} className="h-20 px-3 py-2 rounded-md bg-an-bg-elevated border border-an-border text-sm" />
           </div>
           {conflictWarning && <div className="text-xs text-an-warning mb-2">⚠ {conflictWarning}</div>}
-          <Button variant="primary" disabled={!ndc || !rationale || createMutation.isPending} onClick={() => createMutation.mutate()}>Save rule</Button>
+          <Button
+            variant="primary"
+            disabled={!ndc || !rationale || (needsParLevel && !(Number(parLevelDays) > 0)) || createMutation.isPending}
+            onClick={() => createMutation.mutate()}
+          >
+            Save rule
+          </Button>
         </Card>
       )}
 
@@ -138,6 +169,12 @@ function RuleDetailDrawer({ override, onClose, onToggled }: { override: Override
           <div className="text-xs">{new Date(override.createdDate).toLocaleString()}</div>
           <div className="text-an-fg-subtle text-xs">Rule ID</div>
           <div className="font-mono text-xs">{override.id}</div>
+          {override.type === 'custom_par_level' && (
+            <>
+              <div className="text-an-fg-subtle text-xs">Target days of supply</div>
+              <div className="text-xs">{override.parLevelDays ?? <span className="text-an-warning">not set — this rule has no effect on order quantity</span>}</div>
+            </>
+          )}
         </div>
 
         <div>

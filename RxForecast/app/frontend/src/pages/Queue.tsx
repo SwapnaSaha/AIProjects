@@ -196,6 +196,9 @@ export default function Queue() {
                             Save
                           </button>
                           {saved && <span className="text-an-success text-xs" title="Saved override">✓</span>}
+                          {row.parLevelSource === 'rule' && (
+                            <span className="text-an-accent text-xs" title="Recommended quantity reflects an active custom_par_level rule for this drug">rule</span>
+                          )}
                         </div>
                       );
                     })()}

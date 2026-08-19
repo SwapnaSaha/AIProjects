@@ -8,6 +8,7 @@ Source files referenced throughout:
 - [`backend/src/lib/shortageFeed.js`](./backend/src/lib/shortageFeed.js) — the real openFDA live-feed integration
 - [`backend/src/data/loader.js`](./backend/src/data/loader.js) — the synthetic-data fallback and its relabeling logic
 - [`backend/src/context.js`](./backend/src/context.js) — wires the two data sources together, drives the live poller
+- [`backend/src/lib/overrideRules.js`](./backend/src/lib/overrideRules.js) — the buyer-override lookup consulted in §5.5
 - [`frontend/src/pages/Shortages.tsx`](./frontend/src/pages/Shortages.tsx) — rendering + interactions
 
 ---
@@ -77,11 +78,11 @@ The route always tries `liveDetailText` first (`s.liveDetailText || bulletinExce
 
 ## 5. The substitution list (on expand)
 
-Fetched from `state.substitutions`, which was pre-computed once — at boot in synthetic mode, or on every live-feed poll cycle in live mode — by `buildLiveSubstitutions()` in `substitution.js`. This is **not** computed on demand per card click; the click just fetches the already-built recommendations for that shortage's ID.
+Fetched from `state.substitutions`, which was pre-computed once — at boot in synthetic mode, or on every live-feed poll cycle in live mode — by `buildLiveSubstitutions()` in `substitution.js`. This is **not** computed on demand per card click; the click just fetches the already-built recommendations for that shortage's ID. It **is** recomputed on demand for a specific NDC when a relevant buyer override rule is created or toggled — see §5.5.
 
 ### 5.1 Which alternatives are offered
 
-`findAlternatives()`: every formulary drug sharing the same `genericName` as the shortage NDC (excluding itself), ranked with any TE-code match sorted first, capped at the top 2. Computed once per shortage across the first 3 stores in the store list (`stores.slice(0, 3)`) — a demo-scale limitation, not per-store-in-formulary.
+`findAlternatives()`: every formulary drug sharing the same `genericName` as the shortage NDC (excluding itself), ranked with any TE-code match sorted first, capped at the top 2 — or, if an active `never_generic` rule applies to this NDC+store, filtered to `isBrand` products only before ranking (see §5.5). Computed once per shortage across the first 3 stores in the store list (`stores.slice(0, 3)`) — a demo-scale limitation, not per-store-in-formulary.
 
 ### 5.2 The rationale text
 
@@ -97,6 +98,15 @@ Not a per-option model self-report — a fixed constant computed once per shorta
 ### 5.4 The Schedule II block
 
 `blocked: alt.isControlled && alt.deaSchedule === 2` — computed once when the substitution list is built, not re-checked at accept-time in the UI (though it **is** re-enforced server-side at decision time, see §6). This is why a Schedule II option never shows an "Accept" button at all in `SubstitutionRow`.
+
+### 5.5 Buyer override rules (wired 2026-08-19)
+
+Two rule types change this list directly — see `rule.md` §5 for the full picture across all 5 rule types:
+
+- **`never_substitute`** — if an active rule matches this NDC+store, the record's `options` array is empty and `ruleApplied` is set (`{ type: 'never_substitute', ruleId, rationale }`). The frontend shows a specific message ("No substitutes offered — an active *never substitute* rule blocks this drug") instead of the generic empty-recommendations text.
+- **`never_generic`** — `findAlternatives()` is filtered to brand-only (§5.1), the template rationale gets an extra sentence noting the restriction, and `ruleApplied` is set the same way.
+
+**Why this needed more than just adding the check:** `state.substitutions` is precomputed, not calculated per-request (see the top of §5) — so a rule created mid-session would have nothing to act on until the next boot/poll without extra work. `overrides.js` calls `refreshPendingSubstitutionsForNdc()` after any create/toggle of one of these two rule types, which recomputes options/confidence/`ruleApplied` **in place** for every still-*pending* substitution record on that NDC, leaving already-decided records untouched. Verified live: created a `never_substitute` rule via the API, the very next `GET .../substitutions` call showed the empty options — no restart involved.
 
 ---
 

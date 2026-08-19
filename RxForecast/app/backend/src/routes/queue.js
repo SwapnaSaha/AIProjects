@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { ctx } from '../context.js';
 import { getForecast } from '../lib/forecasting.js';
 import { computePriorityScore } from '../lib/priority.js';
-import { recommendedQtyFromForecast } from '../lib/orderQty.js';
+import { recommendedQtyFromForecast, resolveTargetDays } from '../lib/orderQty.js';
 import { state, writeAudit } from '../data/state.js';
 import { requireStoreScope } from '../middleware/auth.js';
 
@@ -14,12 +14,14 @@ function buildQueueRow(storeId, ndc) {
   const forecast = getForecast(ctx.forecastIndex, storeId, ndc);
   const priority = computePriorityScore({ forecast, inventory, velocityTier: drug.velocityTier });
   const shortage = ctx.shortages.find(s => s.ndc === ndc && (s.status === 'Current' || s.status === 'current'));
+  const targetDays = resolveTargetDays(ndc, storeId, inventory);
   return {
     key: `${storeId}|${ndc}`, storeId, ndc,
     genericName: drug.genericName, brandName: drug.brandName, category: drug.category,
     velocityTier: drug.velocityTier, isControlled: drug.isControlled, deaSchedule: drug.deaSchedule,
     forecastQty7d: forecast.forecastQty7d, insufficientData: forecast.insufficientData,
-    recommendedQty: recommendedQtyFromForecast(forecast, inventory),
+    recommendedQty: recommendedQtyFromForecast(forecast, inventory, targetDays.days),
+    parLevelSource: targetDays.source, // 'rule' | 'default' — lets the UI show when a custom_par_level rule changed this
     onHand: inventory ? inventory.onHand + inventory.inTransit : null,
     daysOfSupply: priority.daysOfSupply, priorityScore: priority.score, urgencyBand: priority.band,
     shortageLinked: !!shortage,

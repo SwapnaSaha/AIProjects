@@ -74,7 +74,9 @@ function createSinglePo(user, { storeId, ndc, distributorId, quantity, confirmOv
     sources: [
       `Forecast: ${rec.forecast.avgDaily} units/day average over ${rec.forecast.dataWindowDays ?? 'n/a'} days of dispense history`,
       `Inventory snapshot: ${rec.inventory?.onHand ?? 'n/a'} on hand + ${rec.inventory?.inTransit ?? 0} in transit`,
-      `Target days of supply: ${rec.inventory?.targetDays ?? 21} (${drug.velocityTier}-tier default)`,
+      rec.targetDays.source === 'rule'
+        ? `Target days of supply: ${rec.targetDays.days} — from active custom_par_level rule ${rec.targetDays.ruleId}, overriding the ${drug.velocityTier}-tier default`
+        : `Target days of supply: ${rec.targetDays.days} (${drug.velocityTier}-tier default)`,
       contract ? `Contract: ${distributor.name} (${contract.type}) at $${unitPrice.toFixed(2)}/pack` : `No contract on file — priced at WAC ($${unitPrice.toFixed(2)}/pack)`,
     ],
   });

@@ -15,7 +15,8 @@ Worth stating plainly, since a demo full of caveats can undersell what's genuine
 - **EDI 850/855 generation** — genuine ANSI X12 004010 envelope structure (ISA/GS/ST…SE/GE/IEA), with real control-number sequencing — this is not mocked text, it's a working X12 generator
 - **Schedule II hard-block** — enforced server-side (verified: the API rejects the request, not just a hidden button)
 - **Audit trail** — complete, accurate, real event chain (approve → transmit → ack → substitution → override), verified end-to-end in this build
-- **Buyer override feedback loop** — accepting a substitution genuinely creates a persistent override, verified live (the override is stored, displayed, toggleable, and fully audited — but not yet *consulted* by anything; see the 🟠 High gap below)
+- **Buyer override feedback loop** — accepting a substitution genuinely creates a persistent override, verified live
+- **Buyer override rules actually change agent behavior for 3 of 5 rule types** (wired 2026-08-19, closing what was previously a gap here) — `never_substitute` and `never_generic` genuinely change the Substitution Reasoner's output, `custom_par_level` genuinely changes the Reorder Queue's recommended quantity, and both take effect **immediately** on rule create/toggle, no server restart needed (verified live: created a rule via the API, confirmed the very next request reflected it). `preferred_distributor` and `always_secondary_source` remain unwired — see the 🟠 High item below
 - **Duplicate suppression** — a queue row genuinely disappears once an open PO covers it
 - **Design system fidelity** — real `an-*` tokens, real Tailwind v4 config, matches `design-system.md`
 - **Bulk approve** (added 2026-08-01) — selecting multiple queue rows and approving them in one action runs every row through the exact same server-side checks as a single approval (Schedule II hard-block, store scope, 2-sigma sanity check); a mixed batch returns a real per-row result, not an all-or-nothing outcome
@@ -39,7 +40,7 @@ Worth stating plainly, since a demo full of caveats can undersell what's genuine
 | Observability | 🟡 Medium | Console logs only | Datadog + Azure Monitor + alerting (`deployment.md` §4) |
 | Testing | 🟡 Medium | Manual E2E verification in this session | Automated unit/integration/E2E/load suite (`lld.md` §9) |
 | Admin dashboard (FEATURE_9) | 🟡 Medium | Not built in this pass | Cross-chain metrics dashboard, separate identity system (`engg.md` FEATURE_9) |
-| Buyer override rules (FEATURE_2) | 🟠 High | Stored/audited/toggleable, but never read by scoring/sourcing/reasoning logic — see `rule.md` §5 | Rules actively shape every future recommendation for their NDC (`engg.md` FEATURE_2) |
+| Buyer override rules — sourcing types (FEATURE_2) | 🟠 High | `preferred_distributor`/`always_secondary_source` stored/audited, but PO sourcing always uses the default distributor — see `rule.md` §5 | Rules actively shape distributor selection at PO creation (`engg.md` FEATURE_2) |
 | Data scope | 🟢 Low | 12 stores, 60 NDCs, 150-day window | 200 stores, 8,000 SKUs, 24 months (`PRD.md` Appendix B) |
 
 ---
@@ -91,11 +92,11 @@ Worth stating plainly, since a demo full of caveats can undersell what's genuine
 - The logical multi-tenancy model `lld.md` §3.1 specifies isn't exercised at all here
 - **Close via:** `lld.md` §3.1, re-introduce `chain_id` when moving to real Postgres
 
-### Buyer override rules not yet consulted (found 2026-08-19, while writing `rule.md`)
-- `state.overridesActive` is read by exactly one route (`overrides.js`, to list/create/toggle) and written to by exactly two (`overrides.js`'s create, and `shortages.js`'s auto-create-on-accept). It is **never read** by `priority.js`, `orderQty.js`, or `substitution.js`.
-- Practical effect: a `never_substitute` rule doesn't currently stop the Substitution Reasoner from offering a substitute; `preferred_distributor` doesn't change PO sourcing; `custom_par_level` doesn't change the recommended quantity. The Rules page's own subtitle ("...the agent applies to future recommendations automatically") describes the intended production behavior, not this build's actual effect.
-- What's real: creation, storage, display, toggling, and full audit citation — the CRUD surface and data model are solid. What's missing is wiring the three consuming modules to actually check `state.overridesActive` before producing their output.
-- **Close via:** `engg.md` FEATURE_2, full detail and rationale in `rule.md` §5
+### Buyer override rules — sourcing types not yet consulted (found 2026-08-19, wired 2026-08-19 for 3 of 5 types)
+- **Wired and verified live:** `never_substitute` and `never_generic` are read by `substitution.js` (via the shared `overrideRules.js` lookup), and `custom_par_level` is read by `orderQty.js`. All three take effect immediately on rule create/toggle — `overrides.js` triggers a targeted recompute of the affected pending substitution records (`refreshPendingSubstitutionsForNdc`) rather than requiring a server restart, since `state.substitutions` is otherwise only built at boot / on a live-feed poll.
+- **Still not wired:** `preferred_distributor` and `always_secondary_source` — these would need to change which distributor `pos.js` sources from at PO creation, a different subsystem than scoring/substitution. The synthetic data's `contract_type` values (340B/Direct/GPO/Prime Vendor) also don't map cleanly onto a "primary vs. secondary" concept yet, so this needs a small data-model decision, not just a wiring change.
+- The Rules page's create-form now shows a per-type note (wired vs. not) so this isn't a silent gap for whoever's using the page.
+- **Close via:** `engg.md` FEATURE_2, full detail in `rule.md` §5
 
 ---
 

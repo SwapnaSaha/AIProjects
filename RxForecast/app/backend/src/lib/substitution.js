@@ -10,16 +10,22 @@
 // §4.5) before being trusted. If Foundry isn't configured, the call fails, or the
 // groundedness gate blocks it, this falls back to the deterministic template rationale —
 // exactly the prototype's original behavior. See GAPS.md "AI reasoning" for current status.
+//
+// Buyer override rules wired in 2026-08-19 (closes rule.md §5's gap): a `never_substitute`
+// rule for this NDC+store suppresses substitution options entirely; a `never_generic`
+// rule restricts offered alternatives to brand-name products only. Both are resolved via
+// overrideRules.js, the same lookup priority.js/orderQty.js now share.
 
 import { callFoundryModel, isFoundryConfigured, newTraceId } from './foundryClient.js';
 import { checkGroundedness } from './contentSafety.js';
 import { recordCallEval } from './evals.js';
+import { findActiveOverride } from './overrideRules.js';
 
-function findAlternatives(formulary, originalNdc) {
+function findAlternatives(formulary, originalNdc, { brandOnly = false } = {}) {
   const original = formulary.find(f => f.ndc === originalNdc);
   if (!original) return [];
   return formulary
-    .filter(f => f.ndc !== originalNdc && f.genericName === original.genericName)
+    .filter(f => f.ndc !== originalNdc && f.genericName === original.genericName && (!brandOnly || f.isBrand))
     .map(alt => ({
       alt,
       teMatch: alt.teCode !== 'NA' && alt.teCode === original.teCode,
@@ -41,7 +47,7 @@ function factsForPrompt(original, alt, teMatch, contracts) {
   };
 }
 
-function buildTemplateRationale(original, alt, teMatch, contracts) {
+function buildTemplateRationale(original, alt, teMatch, contracts, { brandOnlyRule } = {}) {
   const contract = contracts.find(c => c.ndc === alt.ndc);
   const parts = [];
   parts.push(teMatch
@@ -51,6 +57,7 @@ function buildTemplateRationale(original, alt, teMatch, contracts) {
     ? `Contract available via ${contract.distributorId} (${contract.type}) at $${contract.price.toFixed(2)}/pack.`
     : `No active contract found for this alternative — would source at WAC.`);
   if (alt.isControlled) parts.push(`DEA Schedule ${alt.deaSchedule} — substitution requires manual pharmacist sign-off, no auto-approval path.`);
+  if (brandOnlyRule) parts.push(`Restricted to brand-name alternatives per an active "never generic" rule for this drug.`);
   return parts.join(' ');
 }
 
@@ -59,8 +66,8 @@ function buildTemplateRationale(original, alt, teMatch, contracts) {
  * failure at any stage (not configured, network error, failed groundedness check)
  * degrades to the deterministic template rationale, never to an empty/broken response.
  */
-async function buildRationale(original, alt, teMatch, contracts) {
-  const templateText = buildTemplateRationale(original, alt, teMatch, contracts);
+async function buildRationale(original, alt, teMatch, contracts, opts) {
+  const templateText = buildTemplateRationale(original, alt, teMatch, contracts, opts);
 
   if (!isFoundryConfigured()) {
     return { text: templateText, foundryUsed: false, traceId: null };
@@ -90,6 +97,51 @@ async function buildRationale(original, alt, teMatch, contracts) {
   return { text: result.completion, foundryUsed: true, traceId };
 }
 
+/**
+ * Computes just the rule-sensitive part of one (shortage, store) substitution record —
+ * options/confidence/ruleApplied, not the shortage/store identity fields around it.
+ * Split out so a rule change can recompute an already-existing pending record in place
+ * (see overrideRules-triggered refresh in context.js) without rebuilding its id or
+ * losing a decision that was already made on it.
+ */
+async function computeSubstitutionOptions(shortage, original, store, formulary, contracts) {
+  const neverSubstitute = findActiveOverride(shortage.ndc, store.storeId, 'never_substitute');
+  if (neverSubstitute) {
+    // No alternatives offered at all — the rule says don't substitute, full stop.
+    return {
+      options: [],
+      confidence: null,
+      ruleApplied: { type: 'never_substitute', ruleId: neverSubstitute.id, rationale: neverSubstitute.rationale },
+    };
+  }
+
+  const neverGeneric = findActiveOverride(shortage.ndc, store.storeId, 'never_generic');
+  const alternatives = findAlternatives(formulary, shortage.ndc, { brandOnly: !!neverGeneric }).slice(0, 2);
+
+  // Sequential, not Promise.all — keeps this readable and bounds concurrent Foundry
+  // calls in this trimmed demo dataset; lld.md §4.3 has the real bounded-concurrency
+  // fan-out design for production scale.
+  const options = [];
+  for (const { alt, teMatch } of alternatives) {
+    const rationale = await buildRationale(original, alt, teMatch, contracts, { brandOnlyRule: !!neverGeneric });
+    options.push({
+      altNdc: alt.ndc,
+      altGenericName: alt.genericName,
+      altBrandName: alt.brandName,
+      teMatch,
+      rationale: rationale.text,
+      foundryUsed: rationale.foundryUsed,
+      traceId: rationale.traceId,
+      blocked: alt.isControlled && alt.deaSchedule === 2,
+    });
+  }
+  return {
+    options,
+    confidence: options.some(o => o.teMatch) ? 0.86 : 0.52,
+    ruleApplied: neverGeneric ? { type: 'never_generic', ruleId: neverGeneric.id, rationale: neverGeneric.rationale } : null,
+  };
+}
+
 /** Builds live, pending substitution recommendations for currently-active shortages. */
 export async function buildLiveSubstitutions(shortages, formulary, contracts, stores) {
   const out = [];
@@ -98,26 +150,9 @@ export async function buildLiveSubstitutions(shortages, formulary, contracts, st
   for (const shortage of activeShortages) {
     const original = formulary.find(f => f.ndc === shortage.ndc);
     if (!original) continue;
-    const alternatives = findAlternatives(formulary, shortage.ndc).slice(0, 2);
     const sampleStores = stores.slice(0, 3);
     for (const store of sampleStores) {
-      // Sequential, not Promise.all — keeps this readable and bounds concurrent Foundry
-      // calls in this trimmed demo dataset; lld.md §4.3 has the real bounded-concurrency
-      // fan-out design for production scale.
-      const options = [];
-      for (const { alt, teMatch } of alternatives) {
-        const rationale = await buildRationale(original, alt, teMatch, contracts);
-        options.push({
-          altNdc: alt.ndc,
-          altGenericName: alt.genericName,
-          altBrandName: alt.brandName,
-          teMatch,
-          rationale: rationale.text,
-          foundryUsed: rationale.foundryUsed,
-          traceId: rationale.traceId,
-          blocked: alt.isControlled && alt.deaSchedule === 2,
-        });
-      }
+      const computed = await computeSubstitutionOptions(shortage, original, store, formulary, contracts);
       out.push({
         id: `SUBLIVE${seq++}`,
         shortageId: shortage.id,
@@ -126,11 +161,29 @@ export async function buildLiveSubstitutions(shortages, formulary, contracts, st
         originalGenericName: original.genericName,
         severity: shortage.severity,
         reason: shortage.reason,
-        options,
         decision: 'pending',
-        confidence: options.some(o => o.teMatch) ? 0.86 : 0.52,
+        ...computed,
       });
     }
   }
   return out;
+}
+
+/**
+ * Recomputes options/confidence/ruleApplied for every still-pending substitution record
+ * on this NDC, in place — called after an override create/toggle so a rule takes effect
+ * immediately instead of only on the next server restart or live-feed poll. Records
+ * already decided (accepted/rejected) are left untouched — a rule shouldn't retroactively
+ * change history.
+ */
+export async function refreshPendingSubstitutionsForNdc(ndc, { substitutions, shortages, formulary, contracts, storesById }) {
+  const affected = substitutions.filter(s => s.originalNdc === ndc && s.decision === 'pending');
+  for (const sub of affected) {
+    const shortage = shortages.find(s => s.id === sub.shortageId);
+    const original = formulary.find(f => f.ndc === ndc);
+    const store = storesById.get(sub.storeId);
+    if (!shortage || !original || !store) continue;
+    const computed = await computeSubstitutionOptions(shortage, original, store, formulary, contracts);
+    Object.assign(sub, computed);
+  }
 }

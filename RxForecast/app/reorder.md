@@ -4,7 +4,8 @@
 
 Source files referenced throughout:
 - [`backend/src/lib/priority.js`](./backend/src/lib/priority.js) — urgency scoring
-- [`backend/src/lib/orderQty.js`](./backend/src/lib/orderQty.js) — recommended quantity
+- [`backend/src/lib/orderQty.js`](./backend/src/lib/orderQty.js) — recommended quantity, including `custom_par_level` rule resolution
+- [`backend/src/lib/overrideRules.js`](./backend/src/lib/overrideRules.js) — the buyer-override lookup `orderQty.js` consults
 - [`backend/src/lib/forecasting.js`](./backend/src/lib/forecasting.js) — 7-day forecast + confidence band
 - [`backend/src/routes/queue.js`](./backend/src/routes/queue.js) — assembles the queue row, filtering/sorting
 - [`backend/src/routes/forecast.js`](./backend/src/routes/forecast.js) — the detail drawer's forecast + citations
@@ -95,7 +96,7 @@ If there's insufficient forecast data (see §4.3), `priorityScore = 0` and `band
 recommendedQty = max(0, round(avgDailyUsage × targetDaysOfSupply − onHand))
 ```
 
-`targetDaysOfSupply` comes from the inventory record (defaults to 21 days if unset). Plain-language: *"how much do I need to reach my target buffer, given what's already on hand or already inbound."*
+`targetDaysOfSupply` comes from the inventory record (defaults to 21 days if unset) — **unless an active `custom_par_level` buyer override rule exists for this NDC+store, in which case the rule's value wins** (wired 2026-08-19, see `rule.md` §5). `orderQty.js`'s `resolveTargetDays()` is the resolution point; the queue row's `parLevelSource` field (`'rule'` or `'default'`) tells the UI which one actually applied, shown as a small "rule" indicator next to the qty field. Plain-language: *"how much do I need to reach my target buffer, given what's already on hand or already inbound."*
 
 ### 4.3 7-day forecast (`forecasting.js`)
 

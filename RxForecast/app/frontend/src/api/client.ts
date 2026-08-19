@@ -90,6 +90,7 @@ export interface QueueRow {
   key: string; storeId: string; ndc: string; genericName: string; brandName: string; category: string;
   velocityTier: string; isControlled: boolean; deaSchedule: number; forecastQty7d: number | null; insufficientData: boolean;
   recommendedQty: number;
+  parLevelSource: 'rule' | 'default';
   onHand: number | null; daysOfSupply: number | null; priorityScore: number; urgencyBand: 'high' | 'medium' | 'low' | 'insufficient_data';
   shortageLinked: boolean;
 }
@@ -113,14 +114,15 @@ export interface Shortage {
 export interface Substitution {
   id: string; shortageId: string; storeId: string; originalNdc: string; originalGenericName: string; severity: string; reason: string;
   options: { altNdc: string; altGenericName: string; altBrandName: string; teMatch: boolean; rationale: string; blocked: boolean }[];
-  decision: 'pending' | 'accepted' | 'rejected'; confidence: number;
+  decision: 'pending' | 'accepted' | 'rejected'; confidence: number | null;
+  ruleApplied: { type: string; ruleId: string; rationale: string } | null;
 }
 export interface Po {
   id: string; storeId: string; distributorId: string; status: string;
   lines: { ndc: string; quantityAgent: number; quantityFinal: number; unitPrice: number }[];
   createdAt: string; approvedBy: string; transmittedAt: string | null; ediRaw850: string | null; ediRaw855: string | null; ackStatus: string | null;
 }
-export interface Override { id: string; buyerId: string; storeId: string | null; ndc: string; genericName: string; type: string; rationale: string; createdDate: string; active: boolean; }
+export interface Override { id: string; buyerId: string; storeId: string | null; ndc: string; genericName: string; type: string; rationale: string; createdDate: string; active: boolean; parLevelDays: number | null; }
 export interface AuditEntry { id: string; entityType: string; entityId: string; action: string; actorUserId: string; actorRole: string; payload: Record<string, unknown>; sources: string[]; createdAt: string; }
 export interface DashboardSummary {
   asOf: string; isSnapshotOnly: boolean;
