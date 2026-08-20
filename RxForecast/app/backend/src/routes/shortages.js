@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { ctx } from '../context.js';
 import { state, writeAudit, nextPoId } from '../data/state.js';
+import { requireStoreScope } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -10,6 +11,11 @@ function bulletinExcerpt(bulletinId) {
   return ctx.bulletinText.slice(idx - 60 < 0 ? 0 : idx - 60, idx + 500).trim();
 }
 
+// Not store-scoped, deliberately: a shortage record is a drug-level, chain-wide event
+// (no storeId field exists on it at all) — a PIC legitimately needs to know a drug is
+// short chain-wide even before it resolves into a store-specific recommendation below.
+// What IS store-scoped is the substitutions built from each shortage (see :id/substitutions
+// and the decision route) — that's where the real gap was (fixed 2026-08-19).
 router.get('/', (req, res) => {
   const status = req.query.status;
   let list = ctx.shortages;
@@ -33,7 +39,12 @@ router.get('/feed-status', (req, res) => {
 });
 
 router.get('/:id/substitutions', (req, res) => {
-  const subs = state.substitutions.filter(s => s.shortageId === req.params.id);
+  let subs = state.substitutions.filter(s => s.shortageId === req.params.id);
+  // PIC store-scoping (added 2026-08-19 — this route had none at all before, unlike
+  // queue.js). Same "silently narrow to your own store" pattern as a queue read, not a
+  // 403 — a PIC asking about a shortage should just see their own store's recommendation,
+  // not be blocked outright for asking.
+  if (req.user.role === 'pic') subs = subs.filter(s => s.storeId === req.user.storeId);
   res.json(subs);
 });
 
@@ -43,6 +54,11 @@ export const substitutionsRouter = Router();
 substitutionsRouter.post('/:id/decision', (req, res) => {
   const sub = state.substitutions.find(s => s.id === req.params.id);
   if (!sub) return res.status(404).json({ detail: 'Unknown substitution recommendation' });
+  // PIC store-scoping on the write path — reject (403), don't silently narrow, matching
+  // queue.js's defer/reject and pos.js's create-PO enforcement. Before this fix a PIC
+  // could accept/reject a substitution for any store via a direct API call, even though
+  // the UI (post-fix) would never surface one to choose from.
+  if (!requireStoreScope(req, res, sub.storeId)) return;
   const { decision, altNdc } = req.body || {}; // 'accept' | 'reject'
   if (!['accept', 'reject'].includes(decision)) return res.status(400).json({ detail: 'decision must be accept or reject' });
 

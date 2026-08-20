@@ -9,6 +9,7 @@ Source files referenced throughout:
 - [`backend/src/data/loader.js`](./backend/src/data/loader.js) — the synthetic-data fallback and its relabeling logic
 - [`backend/src/context.js`](./backend/src/context.js) — wires the two data sources together, drives the live poller
 - [`backend/src/lib/overrideRules.js`](./backend/src/lib/overrideRules.js) — the buyer-override lookup consulted in §5.5
+- [`backend/src/middleware/auth.js`](./backend/src/middleware/auth.js) — `requireStoreScope`/`enforceStoreScope`, consulted in §5.6
 - [`frontend/src/pages/Shortages.tsx`](./frontend/src/pages/Shortages.tsx) — rendering + interactions
 
 ---
@@ -108,16 +109,30 @@ Two rule types change this list directly — see `rule.md` §5 for the full pict
 
 **Why this needed more than just adding the check:** `state.substitutions` is precomputed, not calculated per-request (see the top of §5) — so a rule created mid-session would have nothing to act on until the next boot/poll without extra work. `overrides.js` calls `refreshPendingSubstitutionsForNdc()` after any create/toggle of one of these two rule types, which recomputes options/confidence/`ruleApplied` **in place** for every still-*pending* substitution record on that NDC, leaving already-decided records untouched. Verified live: created a `never_substitute` rule via the API, the very next `GET .../substitutions` call showed the empty options — no restart involved.
 
+### 5.6 PIC store-scoping (fixed 2026-08-19)
+
+Until this fix, `shortages.js` had **no store scoping at all** — a Pharmacist-in-Charge saw the exact same, unscoped substitution list a buyer does, across all 3 sample stores, and could accept/reject a substitution for a store other than their own via a direct API call. This directly contradicted what the Persona Selector page claimed about the PIC role ("Review shortage alerts and substitutions for their own store"), even though the Reorder Queue had genuinely enforced this all along.
+
+Two different enforcement styles, matching how `queue.js` already does it for the two different kinds of operation:
+
+- **Read** (`GET /:id/substitutions`) — silently narrowed, not blocked: `if (req.user.role === 'pic') subs = subs.filter(s => s.storeId === req.user.storeId)`. A PIC asking about a shortage just sees their own store's recommendation, the same way a PIC's queue request gets its `store_id` silently overridden rather than rejected.
+- **Write** (`POST /:id/decision`) — hard `requireStoreScope()` check, a real 403 if a PIC's session somehow points at another store's substitution (can't happen through the normal UI post-fix, but is enforced server-side regardless — verified directly against the API, not just by hiding the option in the UI).
+
+**Deliberately not scoped:** the shortage list itself (`GET /`, §2–§3). A shortage record has no `storeId` field at all — it's a drug-level, chain-wide event ("amoxicillin is short"), not a store-specific one. What's store-specific is the *recommendation* built from it, which is what §5.6 actually scopes. A PIC still sees that a drug is short chain-wide, same as everyone else; they just can't see or act on another store's substitute recommendation for it.
+
+The page's caption now says so explicitly for a PIC session (`isPic` branch in `Shortages.tsx`), matching the Reorder Queue's existing "your account only sees and acts on your own store" pattern.
+
 ---
 
 ## 6. Accept / Reject — what actually happens
 
 `POST /api/substitutions/:id/decision` in `shortages.js`:
 
-1. **Schedule II hard-block, re-checked server-side:** even though the UI hides the Accept button for a blocked option, the route independently re-verifies `chosen.blocked` and returns a 422 if someone tries to accept one anyway — never trusts the client.
-2. **Audit entry written** for the decision itself, citing: the alternative's rationale text, whether the TE code matched, whether Foundry generated it (with trace ID) or fell back to template, and the shortage's own source/bulletin/reason.
-3. **On accept only:** a new `buyer_override` is auto-created (`type: 'preferred_substitute'`) and **its own separate audit entry** is written, cross-referencing the substitution decision. This is the mechanism that makes an accepted substitution show up on the Rules page afterward.
-4. **On reject:** no override is created — the substitution's `decision` becomes `'rejected'` and nothing else changes.
+1. **PIC store-scope check** (§5.6) — `requireStoreScope()` first, a 403 if the substitution isn't for the PIC's own store.
+2. **Schedule II hard-block, re-checked server-side:** even though the UI hides the Accept button for a blocked option, the route independently re-verifies `chosen.blocked` and returns a 422 if someone tries to accept one anyway — never trusts the client.
+3. **Audit entry written** for the decision itself, citing: the alternative's rationale text, whether the TE code matched, whether Foundry generated it (with trace ID) or fell back to template, and the shortage's own source/bulletin/reason.
+4. **On accept only:** a new `buyer_override` is auto-created (`type: 'preferred_substitute'`) and **its own separate audit entry** is written, cross-referencing the substitution decision. This is the mechanism that makes an accepted substitution show up on the Rules page afterward.
+5. **On reject:** no override is created — the substitution's `decision` becomes `'rejected'` and nothing else changes.
 
 ---
 

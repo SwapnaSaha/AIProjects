@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError, type Shortage, type Substitution } from '../api/client';
+import { useAuth } from '../state/auth';
 import { Badge, Button, Card, EmptyState, Spinner } from '../components/ui';
 
 const SEVERITY_TONE: Record<string, 'error' | 'warning'> = {
@@ -8,6 +9,8 @@ const SEVERITY_TONE: Record<string, 'error' | 'warning'> = {
 };
 
 export default function Shortages() {
+  const { user } = useAuth();
+  const isPic = user?.role === 'pic';
   const { data: shortages, isLoading } = useQuery({ queryKey: ['shortages', 'current'], queryFn: () => api.getShortages('current') });
   const { data: feedStatus } = useQuery({ queryKey: ['shortages', 'feed-status'], queryFn: api.getShortageFeedStatus, refetchInterval: 60_000 });
 
@@ -21,6 +24,7 @@ export default function Shortages() {
         ) : (
           <span className="text-an-fg-muted">(This prototype re-presents a sample of historical shortage records as active for demo purposes — see GAPS.md.)</span>
         )}
+        {isPic && ' Shortages are shown chain-wide, but substitution recommendations and decisions are scoped to your own store — enforced server-side, not just filtered client-side.'}
       </p>
       {isLoading && <Spinner />}
       {shortages && shortages.length === 0 && (
