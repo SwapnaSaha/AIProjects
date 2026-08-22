@@ -5,6 +5,10 @@
 // never needs the full dataset at all. loader.js's own transform logic is untouched;
 // only SYNTH_DIR changes, since these files keep the identical raw column headers.
 //
+// The full external dataset this script reads from is itself produced by
+// scripts/generate.cjs (also committed) — run that first if you need to regenerate the
+// ~101MB source before re-running this trimming step.
+//
 // Run with: node scripts/export-seed-data.mjs (from app/backend/)
 import fs from 'node:fs';
 import path from 'node:path';

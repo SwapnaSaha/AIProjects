@@ -4,7 +4,7 @@ A working prototype of the predictive EDI ordering agent, built to demo the conc
 
 ## Run it
 
-**Backend** (Node.js, no external database — reads the trimmed synthetic dataset committed at `backend/seed-data/` into memory at startup; re-run `node scripts/export-seed-data.mjs` from `backend/` to regenerate it if the full external `RxForecast_SyntheticData/` source ever changes):
+**Backend** (Node.js, no external database — reads the trimmed synthetic dataset committed at `backend/seed-data/` into memory at startup; re-run `node scripts/export-seed-data.mjs` from `backend/` to regenerate it if the full external `RxForecast_SyntheticData/` source ever changes, or `node scripts/generate.cjs` first to regenerate that full ~101MB source itself from the same deterministic seed):
 
 ```bash
 cd backend
