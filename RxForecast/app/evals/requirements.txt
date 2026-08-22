@@ -1,3 +1,4 @@
 azure-ai-evaluation
+azure-identity
 python-dotenv
 requests

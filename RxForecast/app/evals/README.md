@@ -55,6 +55,28 @@ python run_eval.py             # full run — up to ~280 calls across 70 pairs
 Results: a per-row breakdown lands in `results/eval_results.json`; a metrics summary
 prints to stdout.
 
+## Viewing runs in the Foundry portal
+
+Every run also attempts to upload to your Foundry project's **Optimize → Evaluations**
+tab (`FOUNDRY_ENDPOINT`'s project-scoped URL is what's used for this — the same value
+you'd paste from the portal's "Project endpoint" field). This is a **separate auth path**
+from the API key used for model calls: uploading is an Azure control-plane operation that
+needs an Entra ID credential, resolved via `DefaultAzureCredential` (tries Azure CLI
+login, managed identity, environment credentials, etc., in that order).
+
+Without one of those available, upload fails and the script **falls back to a local-only
+run automatically** — verified live: `az` not being on PATH produced a clear
+`DefaultAzureCredential failed to retrieve a token` message, and local results still
+saved correctly. To actually get runs into the portal:
+
+```bash
+# Install Azure CLI (winget on Windows), then:
+az login
+python run_eval.py
+```
+
+On success, the script prints a `studio_url` link straight to the run in the portal.
+
 ## Known gaps vs. the production spec
 
 - 70 pairs, not the PRD's 200 — same trim-for-demo-scale pattern as everywhere else in

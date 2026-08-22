@@ -29,17 +29,19 @@ Cost note: a full run makes up to 4 Foundry calls per pair (target generation, j
 classification, groundedness, relevance) - with 70 pairs that's up to ~280 calls. Use
 --limit for a cheap smoke test first.
 
-NOTE: the GroundednessEvaluator/RelevanceEvaluator constructor and call signatures below
-match the azure-ai-evaluation SDK's documented usage at time of writing, but haven't been
-exercised against a live endpoint (no Python installed in the environment this was
-written in) - verify against your installed package version's own docs before trusting
-the output, same disclaimer foundryClient.js/contentSafety.js carry for their own
-untested request shapes.
+NOTE: verified live 2026-08-21 against a real gpt-5 Foundry deployment - target()
+generation and appropriateness_agreement both work correctly. GroundednessEvaluator/
+RelevanceEvaluator currently fail against this specific deployment: azure-ai-evaluation
+(1.18.3) sends a legacy max_tokens param internally that reasoning-model deployments
+(gpt-5, o-series) reject - a confirmed upstream SDK limitation, not fixable from here.
+Fix: deploy a non-reasoning judge model (e.g. gpt-4o-mini) and point model_config at it.
+See README.md "Known gaps" for detail.
 """
 
 import argparse
 import json
 import os
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -188,7 +190,7 @@ def main():
     }
 
     RESULTS_DIR.mkdir(exist_ok=True)
-    result = evaluate(
+    evaluate_kwargs = dict(
         data=str(data_path),
         target=target,
         evaluators={
@@ -207,6 +209,39 @@ def main():
         },
         output_path=str(RESULTS_DIR / "eval_results.json"),
     )
+
+    # Uploads this run to the Foundry project's Evaluations tab so it's visible in the
+    # portal, not just locally. azure_ai_project takes the *project-scoped* endpoint (the
+    # portal's literal "Project endpoint" value, e.g.
+    # https://<resource>.services.ai.azure.com/api/projects/<project>) - the opposite of
+    # what call_foundry()/model_config need (the resource root), so FOUNDRY_ENDPOINT is
+    # passed here unnormalized. This is a genuinely separate auth path from the api-key
+    # used for model calls above: uploading results is an Azure control-plane operation
+    # that needs an Entra ID credential (DefaultAzureCredential - tries Azure CLI login,
+    # managed identity, environment credentials, etc. in order). If none of those are
+    # available (e.g. no `az login` done), the upload step fails *before* results are
+    # written to output_path (verified by reading azure-ai-evaluation's own source -
+    # _write_output() runs after the cloud-upload call, not before), so this always falls
+    # back to a local-only run on any failure rather than losing results entirely.
+    evaluation_name = f"rxforecast-substitution-eval-{datetime.now():%Y%m%d-%H%M%S}"
+    try:
+        from azure.identity import DefaultAzureCredential
+
+        result = evaluate(
+            **evaluate_kwargs,
+            azure_ai_project=FOUNDRY_ENDPOINT,
+            credential=DefaultAzureCredential(),
+            evaluation_name=evaluation_name,
+        )
+        studio_url = result.get("studio_url")
+        if studio_url:
+            print(f"\nUploaded to Foundry — view in the portal: {studio_url}")
+        else:
+            print("\nRan with azure_ai_project set but no studio_url was returned - check the Evaluations tab manually.")
+    except Exception as exc:  # noqa: BLE001 - cloud upload is best-effort, never fatal
+        print(f"\n[run_eval] Cloud upload to Foundry failed ({exc}); falling back to a local-only run.")
+        print("[run_eval] This is almost always an auth issue - run `az login` (Azure CLI) and retry to fix it.")
+        result = evaluate(**evaluate_kwargs)
 
     metrics = result.get("metrics", {})
     print("\n=== Eval summary ===")
