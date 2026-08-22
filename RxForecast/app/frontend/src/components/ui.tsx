@@ -27,14 +27,17 @@ export function Badge({ tone = 'neutral', children }: { tone?: 'neutral' | 'succ
   );
 }
 
-export function Card({ className = '', children }: { className?: string; children: React.ReactNode }) {
-  return <div className={`bg-an-bg-surface border border-an-border rounded-lg p-4 ${className}`}>{children}</div>;
+export function Card({ className = '', children, title }: { className?: string; children: React.ReactNode; title?: string }) {
+  return <div className={`bg-an-bg-surface border border-an-border rounded-lg p-4 ${className}`} title={title}>{children}</div>;
 }
 
-export function KpiTile({ label, value, sub, accent }: { label: string; value: React.ReactNode; sub?: string; accent?: boolean }) {
+export function KpiTile({ label, value, sub, accent, tooltip }: { label: string; value: React.ReactNode; sub?: string; accent?: boolean; tooltip?: string }) {
   return (
-    <Card>
-      <div className="text-[11px] uppercase tracking-wide text-an-fg-subtle mb-2">{label}</div>
+    <Card className={tooltip ? 'cursor-help' : undefined} title={tooltip}>
+      <div className="text-[11px] uppercase tracking-wide text-an-fg-subtle mb-2 flex items-center gap-1">
+        {label}
+        {tooltip && <span className="text-an-fg-muted" aria-hidden="true">ⓘ</span>}
+      </div>
       <div className={`text-2xl font-semibold ${accent ? 'text-an-accent' : 'text-an-fg-base'}`}>{value}</div>
       {sub && <div className="text-xs text-an-fg-subtle mt-1">{sub}</div>}
     </Card>
