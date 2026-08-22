@@ -59,6 +59,7 @@ Worth stating plainly, since a demo full of caveats can undersell what's genuine
 - When live mode is off (the default), reads the pre-generated synthetic CSV and re-labels a handful of historical events as "active" for demo purposes (flagged in the UI itself, not hidden)
 - Substitution Reasoner: **real Foundry integration point added 2026-08-12** (`backend/src/lib/foundryClient.js`, `contentSafety.js`, `evals.js`), but still runs template logic today because no `FOUNDRY_ENDPOINT`/`FOUNDRY_API_KEY` are set in this environment — `substitution.js` tries the Foundry-hosted Claude deployment first, then the Content Safety groundedness gate, then falls back to the original template rationale on any failure or missing config; verified live (server boot + accept-flow test, 2026-08-12) that the fallback path behaves identically to the pre-integration build. Confidence scores are still fixed constants (0.86 / 0.52), not model self-reports — that's unchanged either way. Set the three `FOUNDRY_*` env vars (see `.env.example`) to actually exercise the real path; the exact Foundry Model Inference API request/response contract used in `foundryClient.js` hasn't been verified against a live endpoint yet and should be checked against your deployment's own API reference first.
 - No RAG, no Azure AI Search — the Foundry call above uses the same structured facts the template already had (formulary, contract, DEA schedule), not a real RAG retrieval over `formulary-kb`
+- **Offline eval harness added 2026-08-22** (`app/evals/`) — scores the Substitution Reasoner's generated rationale against the ground-truth `pharmacist_rated_appropriate` labels in `substitution_events.csv` (70 unique drug pairs), using Azure AI Foundry Evaluation SDK's groundedness/relevance evaluators plus a custom appropriateness-agreement LLM judge (`PRD.md` §8's offline harness, `lld.md` §4.5's continuous-eval layer). Needs the same `FOUNDRY_*` credentials as above to actually run — not exercised against a live endpoint yet, see `app/evals/README.md` "Known gaps."
 - **Close via:** `lld.md` §4 (LangGraph node graph), §4.5 (Foundry integration), `execution.md` §4.1
 
 ### Cloud infrastructure & persistence
@@ -109,7 +110,7 @@ Worth stating plainly, since a demo full of caveats can undersell what's genuine
 
 ### Testing
 - No automated test suite — this build was verified manually, live, in a browser session (documented in this session's history: login, queue, forecast, shortage accept, Schedule II block, EDI generation, audit trail, dashboard all exercised end-to-end)
-- No unit tests, no CI, no load testing, no agent eval harness (there's no real AI to eval yet)
+- No unit tests, no CI, no load testing. An offline agent eval harness now exists (`app/evals/`, added 2026-08-22) but hasn't been run against a live Foundry endpoint yet — see the "AI reasoning" section above
 - **Close via:** `lld.md` §9, `execution.md` §3.9/§4.6
 
 ### FEATURE_9 — Admin Metrics Dashboard

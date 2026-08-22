@@ -57,6 +57,10 @@ Both frontend and backend run from **one Express process** in production — `se
 5. Leave environment variables unset — every optional integration (Foundry, Content Safety, the live openFDA feed) is off by default and the app runs fully without any of them; see `.env.example` in `backend/` if you want to turn one on later.
 6. Deploy. Render gives you a `https://<your-service-name>.onrender.com` URL — that's the one link to share.
 
+## Evals
+
+**[evals/](./evals/)** — offline eval harness for the Substitution Reasoner, scoring generated rationales against synthetic ground-truth pharmacist-appropriateness labels via Azure AI Foundry's Evaluation SDK (groundedness, relevance, and a custom appropriateness-agreement judge). See `evals/README.md` to run it — needs the same `FOUNDRY_*` credentials as the backend.
+
 ## Stack
 
 - Backend: Node.js + Express, in-memory data (no DB — see `GAPS.md`)
