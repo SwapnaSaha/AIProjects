@@ -98,8 +98,18 @@ On success, the script prints a `studio_url` link straight to the run in the por
   `gpt-4o-mini`/`gpt-4.1-mini` — and point `model_config` in `run_eval.py` at that
   deployment instead of the one being evaluated. Until then, `te_match_baseline` and
   `appropriateness_agreement` are the only metrics that actually run.
-- A 5-pair smoke test already surfaced a real finding worth taking seriously even before
-  a full run: the generated rationale's bottom-line verdict was **inconsistent** across
-  structurally identical TE-mismatched semaglutide pairs — "not appropriate for automatic
-  substitution" on one, "Appropriate:" on another, no discernible pattern. Worth a full
-  70-pair run to see if that's noise or a real reasoning-consistency problem.
+- **Full 70-pair run completed 2026-08-22** (uploaded to Foundry). Real numbers, worth
+  reading with the class balance in mind: ground truth is 54 `appropriate` / 16 `flagged`
+  (77% appropriate) — so a trivial "always guess appropriate" baseline would score 77%,
+  which both real metrics fall short of. `te_match_baseline` scored **65.7%** (46/70) —
+  worse than that trivial baseline, meaning TE-match alone is *not* a strong predictor of
+  the historical pharmacist verdict, despite being the main signal `substitution.js`'s own
+  confidence heuristic (0.86 vs 0.52) is built on. `appropriateness_agreement` scored
+  **49.1%** (barely better than a coin flip) — the live-generated rationale's implied
+  stance agreed with the historical consensus on only about half the pairs, and did so
+  *less* reliably than the deterministic TE-match signal. Some of that gap is plausibly
+  judge noise (the LLM-judge call sometimes misreads a rationale's actual conclusion when
+  the wording is mixed, e.g. "appears appropriate... though not established") rather than
+  pure model-reasoning inconsistency — worth a closer per-row read before treating 49.1%
+  as a clean quality number, but the headline finding (neither signal clearly beats the
+  class-imbalance baseline) is real and worth taking seriously as-is.
