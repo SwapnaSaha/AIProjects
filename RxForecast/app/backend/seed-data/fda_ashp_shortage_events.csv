@@ -1,0 +1,11 @@
+shortage_id,ndc,generic_name,source,status,date_reported,date_resolved,reason,severity,bulletin_id
+SHRT0001,28307-336-11,semaglutide,FDA Drug Shortage Database,Resolved,2024-02-27,2024-05-02,Regulatory/quality issue at manufacturing site,Partial - limited manufacturers,ASHP-2024-0002
+SHRT0002,59899-705-80,tirzepatide,FDA Drug Shortage Database,Resolved,2025-01-26,2025-02-27,Regulatory/quality issue at manufacturing site,Full shortage - no supply,ASHP-2025-0003
+SHRT0003,58181-179-41,amphetamine/dextroamphetamine,FDA Drug Shortage Database,Resolved,2024-12-03,2025-01-07,Manufacturing delay,Partial - limited manufacturers,FDA-2024-0004
+SHRT0004,83032-760-78,amoxicillin,ASHP Drug Shortages,Resolved,2025-07-22,2025-09-29,Manufacturing delay,Full shortage - no supply,FDA-2025-0005
+SHRT0005,92126-761-19,albuterol HFA,FDA Drug Shortage Database,Resolved,2024-09-16,2024-10-23,Raw material shortage,Full shortage - no supply,ASHP-2024-0006
+SHRT0006,91775-889-68,lisdexamfetamine,ASHP Drug Shortages,Resolved,2024-07-25,2024-09-23,Demand increase for the drug,Partial - limited manufacturers,ASHP-2024-0007
+SHRT0007,72186-828-29,insulin glargine,ASHP Drug Shortages,Current,2025-10-25,,Demand increase for the drug,Partial - limited manufacturers,FDA-2025-0008
+SHRT0008,73903-957-64,methylphenidate ER,FDA Drug Shortage Database,Resolved,2025-06-05,2025-07-24,Manufacturing delay,Partial - allocation in place,FDA-2025-0009
+SHRT0009,70781-158-58,oseltamivir,FDA Drug Shortage Database,Resolved,2025-08-24,2025-11-30,Raw material shortage,Partial - allocation in place,ASHP-2025-0010
+SHRT0010,35925-784-33,adalimumab,ASHP Drug Shortages,Resolved,2025-08-17,2025-11-05,Raw material shortage,Partial - limited manufacturers,FDA-2025-0011

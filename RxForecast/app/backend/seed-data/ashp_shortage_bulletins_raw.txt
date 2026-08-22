@@ -1,0 +1,130 @@
+================================================================
+Bulletin ID: ASHP-2024-0002
+Source: FDA Drug Shortage Database
+Date Reported: 2024-02-27
+
+SEMAGLUTIDE (NDC 28307-336-11) — Drug Shortage Update
+
+Reason for Shortage: Regulatory/quality issue at manufacturing site.
+Current Status: This shortage was resolved on 2024-05-02.
+Estimated Resupply: N/A - resolved.
+Severity: Partial - limited manufacturers
+Alternative agents/therapeutic equivalents should be evaluated per Orange Book TE coding and formulary status. Contact your wholesaler for allocation details.
+
+================================================================
+Bulletin ID: ASHP-2025-0003
+Source: FDA Drug Shortage Database
+Date Reported: 2025-01-26
+
+TIRZEPATIDE (NDC 59899-705-80) — Drug Shortage Update
+
+Reason for Shortage: Regulatory/quality issue at manufacturing site.
+Current Status: This shortage was resolved on 2025-02-27.
+Estimated Resupply: N/A - resolved.
+Severity: Full shortage - no supply
+Alternative agents/therapeutic equivalents should be evaluated per Orange Book TE coding and formulary status. Contact your wholesaler for allocation details.
+
+================================================================
+Bulletin ID: FDA-2024-0004
+Source: FDA Drug Shortage Database
+Date Reported: 2024-12-03
+
+AMPHETAMINE/DEXTROAMPHETAMINE (NDC 58181-179-41) — Drug Shortage Update
+
+Reason for Shortage: Manufacturing delay.
+Current Status: This shortage was resolved on 2025-01-07.
+Estimated Resupply: N/A - resolved.
+Severity: Partial - limited manufacturers
+Alternative agents/therapeutic equivalents should be evaluated per Orange Book TE coding and formulary status. Contact your wholesaler for allocation details.
+
+================================================================
+Bulletin ID: FDA-2025-0005
+Source: ASHP Drug Shortages
+Date Reported: 2025-07-22
+
+AMOXICILLIN (NDC 83032-760-78) — Drug Shortage Update
+
+Reason for Shortage: Manufacturing delay.
+Current Status: This shortage was resolved on 2025-09-29.
+Estimated Resupply: N/A - resolved.
+Severity: Full shortage - no supply
+Alternative agents/therapeutic equivalents should be evaluated per Orange Book TE coding and formulary status. Contact your wholesaler for allocation details.
+
+================================================================
+Bulletin ID: ASHP-2024-0006
+Source: FDA Drug Shortage Database
+Date Reported: 2024-09-16
+
+ALBUTEROL HFA (NDC 92126-761-19) — Drug Shortage Update
+
+Reason for Shortage: Raw material shortage.
+Current Status: This shortage was resolved on 2024-10-23.
+Estimated Resupply: N/A - resolved.
+Severity: Full shortage - no supply
+Alternative agents/therapeutic equivalents should be evaluated per Orange Book TE coding and formulary status. Contact your wholesaler for allocation details.
+
+================================================================
+Bulletin ID: ASHP-2024-0007
+Source: ASHP Drug Shortages
+Date Reported: 2024-07-25
+
+LISDEXAMFETAMINE (NDC 91775-889-68) — Drug Shortage Update
+
+Reason for Shortage: Demand increase for the drug.
+Current Status: This shortage was resolved on 2024-09-23.
+Estimated Resupply: N/A - resolved.
+Severity: Partial - limited manufacturers
+Alternative agents/therapeutic equivalents should be evaluated per Orange Book TE coding and formulary status. Contact your wholesaler for allocation details.
+
+================================================================
+Bulletin ID: FDA-2025-0008
+Source: ASHP Drug Shortages
+Date Reported: 2025-10-25
+
+INSULIN GLARGINE (NDC 72186-828-29) — Drug Shortage Update
+
+Reason for Shortage: Demand increase for the drug.
+Current Status: This drug is currently in shortage.
+Estimated Resupply: Manufacturer estimates resupply in 4-6 weeks.
+Severity: Partial - limited manufacturers
+Alternative agents/therapeutic equivalents should be evaluated per Orange Book TE coding and formulary status. Contact your wholesaler for allocation details.
+
+================================================================
+Bulletin ID: FDA-2025-0009
+Source: FDA Drug Shortage Database
+Date Reported: 2025-06-05
+
+METHYLPHENIDATE ER (NDC 73903-957-64) — Drug Shortage Update
+
+Reason for Shortage: Manufacturing delay.
+Current Status: This shortage was resolved on 2025-07-24.
+Estimated Resupply: N/A - resolved.
+Severity: Partial - allocation in place
+Alternative agents/therapeutic equivalents should be evaluated per Orange Book TE coding and formulary status. Contact your wholesaler for allocation details.
+
+================================================================
+Bulletin ID: ASHP-2025-0010
+Source: FDA Drug Shortage Database
+Date Reported: 2025-08-24
+
+OSELTAMIVIR (NDC 70781-158-58) — Drug Shortage Update
+
+Reason for Shortage: Raw material shortage.
+Current Status: This shortage was resolved on 2025-11-30.
+Estimated Resupply: N/A - resolved.
+Severity: Partial - allocation in place
+Alternative agents/therapeutic equivalents should be evaluated per Orange Book TE coding and formulary status. Contact your wholesaler for allocation details.
+
+================================================================
+Bulletin ID: FDA-2025-0011
+Source: ASHP Drug Shortages
+Date Reported: 2025-08-17
+
+ADALIMUMAB (NDC 35925-784-33) — Drug Shortage Update
+
+Reason for Shortage: Raw material shortage.
+Current Status: This shortage was resolved on 2025-11-05.
+Estimated Resupply: N/A - resolved.
+Severity: Partial - limited manufacturers
+Alternative agents/therapeutic equivalents should be evaluated per Orange Book TE coding and formulary status. Contact your wholesaler for allocation details.
+

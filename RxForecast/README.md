@@ -21,4 +21,4 @@ Predictive EDI ordering agent for mid-market pharmacy chains — AI Product Mana
 7. **[execution.md](./execution.md)** — phased build plan tying the above together, with a production-readiness gate checklist
 8. **[deployment.md](./deployment.md)** — deployment runbook, security foundations, post-deployment monitoring
 
-Synthetic test data (12 stores, 208 NDCs, 24 months) lives locally at `AIPMCourse/RxForecast_SyntheticData/` — not included in this repo due to size (~101MB); ask if you want it added as a separate release artifact or Git LFS asset.
+Full synthetic test data (12 stores, 208 NDCs, 24 months) lives locally at `AIPMCourse/RxForecast_SyntheticData/` — not included in this repo due to size (~101MB); ask if you want it added as a separate release artifact or Git LFS asset. A trimmed slice of it (12 stores, 60 NDCs, 150 days — what the prototype actually loads) **is** committed at `RxForecast/app/backend/seed-data/` (~7MB), added 2026-08-22 specifically so `app/` can be deployed without needing the full external dataset — see `RxForecast/app/backend/scripts/export-seed-data.mjs`.

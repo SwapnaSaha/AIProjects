@@ -4,7 +4,7 @@ A working prototype of the predictive EDI ordering agent, built to demo the conc
 
 ## Run it
 
-**Backend** (Node.js, no external database — reads a trimmed slice of `../../RxForecast_SyntheticData/` into memory at startup):
+**Backend** (Node.js, no external database — reads the trimmed synthetic dataset committed at `backend/seed-data/` into memory at startup; re-run `node scripts/export-seed-data.mjs` from `backend/` to regenerate it if the full external `RxForecast_SyntheticData/` source ever changes):
 
 ```bash
 cd backend
@@ -38,6 +38,24 @@ Open `http://localhost:5173`, pick a role (no password — this is a prototype, 
 8. Sign out, sign back in as **Pharmacist-in-Charge** → notice the Reorder Queue shows a "Store-locked: ST001" indicator instead of a store picker, and every row is that store only — this is enforced by the API, not just the UI (try editing the URL/query string, it still comes back scoped)
 9. Sign in as **Compliance Officer** → **Audit Trail** — see the full chain: approved → transmitted → acked → substitution decided → override created; **click any row** to open its detail — a plain-language explanation, the full structured payload, numbered citations, and (for PO-related entries) the linked raw X12 850/855
 10. Sign in as **Director** → **Dashboard** — real session-aggregated metrics
+
+## Deploying a shareable link (free)
+
+Both frontend and backend run from **one Express process** in production — `server.js` serves the built React app as static files alongside the `/api/*` routes, same origin, so there's no CORS setup and the frontend's `/api` calls (already relative, unchanged) just work. This means one deployed URL, not two.
+
+**[Render](https://render.com)** free web service tier fits this: no credit card required, 512MB RAM/0.1 CPU (plenty for this app), 750 free hours/month. The one real caveat — a free service **sleeps after 15 minutes idle and takes 30–60s to wake up** on the next request. Open the link yourself a minute before a live demo so your manager doesn't hit that cold start.
+
+1. Push this repo to GitHub (already done if you're reading this from the repo).
+2. Create a free Render account (render.com) and connect your GitHub account — you do this step yourself, not something that can be automated on your behalf.
+3. **New → Web Service**, pick this repo.
+4. Settings:
+   - **Root Directory:** `RxForecast/app`
+   - **Environment:** Node
+   - **Build Command:** `cd frontend && npm install && npm run build && cd ../backend && npm install`
+   - **Start Command:** `cd backend && npm start`
+   - **Instance Type:** Free
+5. Leave environment variables unset — every optional integration (Foundry, Content Safety, the live openFDA feed) is off by default and the app runs fully without any of them; see `.env.example` in `backend/` if you want to turn one on later.
+6. Deploy. Render gives you a `https://<your-service-name>.onrender.com` URL — that's the one link to share.
 
 ## Stack
 

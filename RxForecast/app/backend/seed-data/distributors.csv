@@ -1,0 +1,4 @@
+distributor_id,name,role,avg_lead_time_days,allocation_prone
+MCK,McKesson,primary,2,medium
+CAH,Cardinal Health,secondary,3,medium
+ABC,AmerisourceBergen,tertiary,4,low

@@ -4,7 +4,15 @@ import { fileURLToPath } from 'node:url';
 import { parseCSV, toNum, toBool } from '../lib/csv.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const SYNTH_DIR = path.resolve(__dirname, '../../../../../RxForecast_SyntheticData');
+// Points at the trimmed, committed copy (app/backend/seed-data/) — not the ~101MB
+// external RxForecast_SyntheticData/ folder, which was deliberately never pushed to git
+// and so isn't available in any deployed environment. seed-data/ is the exact
+// NDC/store/date slice this file's own filtering logic below would produce anyway;
+// see scripts/export-seed-data.mjs for how it's generated (re-run it if the source
+// dataset changes). This also means the filtering logic below is now a no-op pass over
+// already-trimmed data — left in place rather than removed, so this file still works
+// correctly if ever pointed back at the full dataset for local re-generation work.
+const SYNTH_DIR = path.resolve(__dirname, '../../seed-data');
 
 function readFull(name) {
   return parseCSV(fs.readFileSync(path.join(SYNTH_DIR, name), 'utf8'));

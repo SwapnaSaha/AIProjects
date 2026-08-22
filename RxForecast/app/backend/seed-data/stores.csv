@@ -1,0 +1,13 @@
+store_id,store_name,city,state,dc_assignment,store_format,open_date,sqft_tier,pharmacist_in_charge
+ST001,Austin #1,Austin,TX,DC-NORTH,standard_retail,2015-01-01,small,PIC-ST001
+ST002,San Antonio #2,San Antonio,TX,DC-SOUTH,club_warehouse,2015-01-01,small,PIC-ST002
+ST003,Dallas #3,Dallas,TX,DC-NORTH,club_warehouse,2015-01-01,medium,PIC-ST003
+ST004,Houston #4,Houston,TX,DC-SOUTH,club_warehouse,2015-01-01,medium,PIC-ST004
+ST005,Corpus Christi #5,Corpus Christi,TX,DC-NORTH,standard_retail,2015-01-01,large,PIC-ST005
+ST006,Waco #6,Waco,TX,DC-SOUTH,club_warehouse,2015-01-01,large,PIC-ST006
+ST007,Tyler #7,Tyler,TX,DC-NORTH,standard_retail,2015-01-01,large,PIC-ST007
+ST008,Lubbock #8,Lubbock,TX,DC-SOUTH,standard_retail,2015-01-01,large,PIC-ST008
+ST009,El Paso #9,El Paso,TX,DC-NORTH,club_warehouse,2015-01-01,large,PIC-ST009
+ST010,Amarillo #10,Amarillo,TX,DC-SOUTH,standard_retail,2015-01-01,small,PIC-ST010
+ST011,Baton Rouge #11,Baton Rouge,LA,DC-NORTH,standard_retail,2015-01-01,large,PIC-ST011
+ST012,Shreveport #12,Shreveport,LA,DC-SOUTH,standard_retail,2015-01-01,medium,PIC-ST012

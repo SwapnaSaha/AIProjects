@@ -15,7 +15,7 @@ Source files referenced throughout:
 
 ## 1. Raw data sources
 
-Everything below is computed from four CSVs in `RxForecast_SyntheticData/`, loaded once at server boot (`loader.js`):
+Everything below is computed from four CSVs, loaded once at server boot (`loader.js`) from `backend/seed-data/` — a trimmed, committed copy of the full external `RxForecast_SyntheticData/` dataset (added 2026-08-22 so the app can actually be deployed; see `scripts/export-seed-data.mjs`):
 
 | File | What it provides | Loaded as |
 |---|---|---|
