@@ -78,7 +78,11 @@ async function buildRationale(original, alt, teMatch, contracts, opts) {
   const systemPrompt = 'You are a pharmacy formulary substitution assistant. Given structured facts about a drug shortage and one candidate alternative, write ONE concise, factual sentence explaining whether the alternative is appropriate. Cite only the facts provided — never invent an NDC, dosage, price, or regulatory detail that is not present in the facts given to you.';
   const userPrompt = `Facts: ${JSON.stringify(facts)}`;
 
-  const result = await callFoundryModel({ systemPrompt, userPrompt, maxTokens: 200, traceId });
+  // 1000, not a tight 200: reasoning models (e.g. this deployment's gpt-5) spend
+  // completion-token budget on internal reasoning before any visible output — verified
+  // live that 200 was consistently exhausted by reasoning alone, producing empty content
+  // (finish_reason: "length"). See foundryClient.js's header comment.
+  const result = await callFoundryModel({ systemPrompt, userPrompt, maxTokens: 1000, traceId });
   if (!result) {
     recordCallEval({ callType: 'substitution_rationale', traceId, foundryUsed: false, groundednessResult: null });
     return { text: templateText, foundryUsed: false, traceId };

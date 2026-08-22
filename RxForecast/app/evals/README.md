@@ -65,6 +65,19 @@ prints to stdout.
 - This is a one-shot offline batch run, not the continuous/sampled production pipeline
   `lld.md` §4.5 describes (nightly rollup into `metric_snapshots`, weekly HHH_Eval
   review) — there's no scheduler, database, or dashboard wired to this yet.
-- `GroundednessEvaluator`/`RelevanceEvaluator` call signatures here haven't been exercised
-  against a live Foundry endpoint — verify against your installed `azure-ai-evaluation`
-  version's docs if the run errors on evaluator construction or invocation.
+- **`groundedness`/`relevance` don't currently work against a reasoning-model deployment
+  (confirmed live 2026-08-21 against a `gpt-5` "Global Standard" deployment).**
+  `azure-ai-evaluation`'s built-in evaluators still send the legacy `max_tokens` param
+  internally, which GPT-5/o-series reasoning models reject (`max_completion_tokens` is
+  required instead) — this is a known SDK limitation, not something fixable from this
+  script's side (`target()` and the custom `appropriateness_agreement` evaluator work
+  fine since they build their own requests and already use the right param name). Fix:
+  deploy a second, non-reasoning judge model in the Foundry portal — e.g.
+  `gpt-4o-mini`/`gpt-4.1-mini` — and point `model_config` in `run_eval.py` at that
+  deployment instead of the one being evaluated. Until then, `te_match_baseline` and
+  `appropriateness_agreement` are the only metrics that actually run.
+- A 5-pair smoke test already surfaced a real finding worth taking seriously even before
+  a full run: the generated rationale's bottom-line verdict was **inconsistent** across
+  structurally identical TE-mismatched semaglutide pairs — "not appropriate for automatic
+  substitution" on one, "Appropriate:" on another, no discernible pattern. Worth a full
+  70-pair run to see if that's noise or a real reasoning-consistency problem.

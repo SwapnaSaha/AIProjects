@@ -68,15 +68,22 @@ SYSTEM_PROMPT = (
 )
 
 
-def call_foundry(system_prompt: str, user_prompt: str, max_tokens: int = 200) -> Optional[str]:
+def call_foundry(system_prompt: str, user_prompt: str, max_tokens: int = 1000) -> Optional[str]:
     """Mirrors foundryClient.js's callFoundryModel(): same endpoint shape, same
-    fall-through-to-None-on-failure contract (never raises)."""
+    fall-through-to-None-on-failure contract (never raises).
+
+    FOUNDRY_ENDPOINT is normalized to strip a project-scoped /api/projects/<name> suffix
+    (what the Foundry portal's "Project endpoint" field gives you to copy-paste) - the
+    Model Inference API this hits needs the bare resource root instead. See
+    foundryClient.js's header comment for the two gotchas found getting this working live."""
+    import re
     import requests
 
-    url = f"{FOUNDRY_ENDPOINT.rstrip('/')}/chat/completions?api-version={FOUNDRY_API_VERSION}"
+    resource_root = re.sub(r"/api/projects/[^/]+$", "", FOUNDRY_ENDPOINT.rstrip("/"))
+    url = f"{resource_root}/models/chat/completions?api-version={FOUNDRY_API_VERSION}"
     body = {
         "model": FOUNDRY_DEPLOYMENT_NAME,
-        "max_tokens": max_tokens,
+        "max_completion_tokens": max_tokens,
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
@@ -93,7 +100,7 @@ def call_foundry(system_prompt: str, user_prompt: str, max_tokens: int = 200) ->
 
 
 def target(originalGenericName, altGenericName, teMatch, originalTeCode, altTeCode,
-           contract, controlled, deaSchedule, **_):
+           contract, controlled, deaSchedule):
     """The thing being evaluated - generates the same rationale text
     substitution.js's buildRationale() would produce for this pair."""
     facts = {
@@ -111,7 +118,7 @@ def target(originalGenericName, altGenericName, teMatch, originalTeCode, altTeCo
     return {"response": response, "context": json.dumps(facts), "query": query}
 
 
-def te_match_baseline(*, teMatch, groundTruthLabel, **_):
+def te_match_baseline(*, teMatch, groundTruthLabel):
     """Free, deterministic sanity check - no model call. Does TE-match alone predict the
     historical pharmacist verdict?"""
     predicted = "appropriate" if teMatch else "flagged"
@@ -123,7 +130,7 @@ class AppropriatenessAgreementEvaluator:
     historical pharmacist-appropriate consensus for this pair? Standing in for PRD.md
     Section 8's 5-PharmD panel review, with a second Foundry call acting as judge."""
 
-    def __call__(self, *, response, groundTruthLabel, **_):
+    def __call__(self, *, response, groundTruthLabel):
         if not response:
             return {"appropriateness_agreement": None}
         judge_prompt = (
@@ -131,10 +138,12 @@ class AppropriatenessAgreementEvaluator:
             "as exactly one word: APPROPRIATE or FLAGGED. Respond with only that one word.\n\n"
             f"Rationale: {response}"
         )
+        # 300, not a tight 5: even a one-word answer needs headroom for this reasoning
+        # model's internal reasoning tokens first (see call_foundry's docstring).
         verdict = call_foundry(
             "You are a strict classifier. Respond with exactly one word: APPROPRIATE or FLAGGED.",
             judge_prompt,
-            max_tokens=5,
+            max_tokens=300,
         )
         predicted = "appropriate" if verdict and "APPROPRIATE" in verdict.upper() else "flagged"
         return {"appropriateness_agreement": int(predicted == groundTruthLabel)}
@@ -165,8 +174,14 @@ def main():
         RESULTS_DIR.mkdir(exist_ok=True)
         data_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
+    # GroundednessEvaluator/RelevanceEvaluator build their own AzureOpenAI client from
+    # this config (classic {azure_endpoint}/openai/deployments/{azure_deployment}/... URL
+    # shape) - needs the same resource-root normalization call_foundry() does, or it hits
+    # the same "API version not supported" error the raw project-scoped endpoint causes.
+    import re as _re
+    resource_root = _re.sub(r"/api/projects/[^/]+$", "", FOUNDRY_ENDPOINT.rstrip("/"))
     model_config = {
-        "azure_endpoint": FOUNDRY_ENDPOINT,
+        "azure_endpoint": resource_root,
         "api_key": FOUNDRY_API_KEY,
         "azure_deployment": FOUNDRY_DEPLOYMENT_NAME,
         "api_version": FOUNDRY_API_VERSION,

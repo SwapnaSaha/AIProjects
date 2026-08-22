@@ -8,12 +8,20 @@
 // current behavior changes until real values are set.
 //
 // Request shape targets Azure AI Foundry's Model Inference API (the unified
-// chat-completions endpoint Foundry exposes for model-catalog deployments, including
-// partner-catalog models like Claude): POST {endpoint}/chat/completions?api-version=...
-// Verify this exact contract against your deployed model's own API reference in the
-// Foundry portal before relying on it — Foundry's endpoint shape can differ by
-// deployment type (serverless model-as-a-service vs. managed compute), and this hasn't
-// been exercised against a live endpoint yet.
+// chat-completions endpoint Foundry exposes for model-catalog deployments):
+// POST {resourceRoot}/models/chat/completions?api-version=... — verified live 2026-08-21
+// against a gpt-5 "Global Standard" deployment.
+//
+// Two gotchas found running it for real, worth knowing if this stops working against a
+// different deployment: (1) the Foundry portal's "Project endpoint" field (what you'd
+// naturally copy-paste) is the *project-scoped* URL, e.g.
+// https://<resource>.services.ai.azure.com/api/projects/<project> — that's for the
+// Agents/Assistants APIs, not this one, and calling /chat/completions on it 400s with a
+// misleading "API version not supported". The Model Inference API needs the bare
+// *resource root* instead, so FOUNDRY_ENDPOINT is normalized below to strip any
+// /api/projects/... suffix, letting you paste the portal's value as-is. (2) some models
+// (e.g. gpt-5) reject `max_tokens` and require `max_completion_tokens` instead — if a
+// different backing model rejects *that* param name, this may need to branch by model.
 
 const FOUNDRY_ENDPOINT = process.env.FOUNDRY_ENDPOINT;
 const FOUNDRY_API_KEY = process.env.FOUNDRY_API_KEY;
@@ -36,10 +44,11 @@ export function newTraceId() {
 export async function callFoundryModel({ systemPrompt, userPrompt, maxTokens = 1024, traceId }) {
   if (!isFoundryConfigured()) return null;
 
-  const url = `${FOUNDRY_ENDPOINT.replace(/\/$/, '')}/chat/completions?api-version=${FOUNDRY_API_VERSION}`;
+  const resourceRoot = FOUNDRY_ENDPOINT.replace(/\/$/, '').replace(/\/api\/projects\/[^/]+$/, '');
+  const url = `${resourceRoot}/models/chat/completions?api-version=${FOUNDRY_API_VERSION}`;
   const body = {
     model: FOUNDRY_DEPLOYMENT_NAME,
-    max_tokens: maxTokens,
+    max_completion_tokens: maxTokens,
     messages: [
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt },
