@@ -126,7 +126,7 @@ Worth stating plainly, since a demo full of caveats can undersell what's genuine
 
 ## 🟢 Low — scale/scope only, not a design gap
 
-- **12 stores / 60 NDCs / 150-day window** loaded, vs. the PRD's 200-store / 8,000-SKU / 24-month production target. Same generator (`RxForecast_SyntheticData/generate.js`) can be re-parameterized to full scale — this was a deliberate trim for fast local startup, not a limitation of the approach
+- **12 stores / 60 NDCs / 150-day window** loaded, vs. the PRD's 200-store / 8,000-SKU / 24-month production target. Same generator (`app/backend/scripts/generate.cjs`) can be re-parameterized to full scale — this was a deliberate trim for fast local startup, not a limitation of the approach
 - Illustrative "savings" figure on the Director Dashboard uses a placeholder multiplier (15% of shipped-order value), explicitly labeled as a demo estimate, not `engg.md` FEATURE_8's real baseline-vs-current methodology (which needs historical data this fresh in-memory server doesn't have)
 
 ---

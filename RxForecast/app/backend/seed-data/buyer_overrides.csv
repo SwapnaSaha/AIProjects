@@ -1,61 +1,56 @@
 override_id,buyer_id,store_id,ndc,generic_name,override_type,rationale,created_date,active
-OVR0001,BUYER2,ST006,97439-527-58,apixaban,always_secondary_source,Store-level insurance mix favors this NDC,2024-12-03,true
-OVR0002,BUYER1,ALL_STORES,59428-765-88,amlodipine,never_generic,Patient continuity of care preference from PIC,2024-02-24,true
-OVR0003,BUYER2,ALL_STORES,74395-984-69,fluticasone nasal spray,never_generic,Preferred generic manufacturer per contract,2024-09-21,true
-OVR0004,BUYER4,ST004,21059-230-80,alprazolam,always_secondary_source,Historical adverse substitution feedback,2024-07-10,true
-OVR0005,BUYER4,ALL_STORES,35129-243-96,losartan,preferred_distributor,Patient continuity of care preference from PIC,2025-02-10,true
-OVR0006,BUYER4,ALL_STORES,90471-917-54,pantoprazole,never_substitute,Patient continuity of care preference from PIC,2025-07-27,true
-OVR0007,BUYER4,ALL_STORES,25443-741-74,metoprolol succinate ER,never_substitute,Store-level insurance mix favors this NDC,2024-01-29,true
-OVR0008,BUYER1,ST011,81273-586-56,fluticasone nasal spray,never_generic,Preferred generic manufacturer per contract,2025-03-14,true
-OVR0009,BUYER3,ST004,82408-727-65,clopidogrel,custom_par_level,Historical adverse substitution feedback,2024-06-18,false
-OVR0010,BUYER3,ALL_STORES,62924-796-96,methylphenidate ER,custom_par_level,Patient continuity of care preference from PIC,2024-12-10,false
-OVR0011,BUYER3,ALL_STORES,65749-587-96,furosemide,never_substitute,Historical adverse substitution feedback,2024-10-13,false
-OVR0012,BUYER4,ST003,59315-796-34,pantoprazole,preferred_distributor,Store-level insurance mix favors this NDC,2024-10-18,false
-OVR0013,BUYER3,ST010,57137-519-83,levothyroxine,never_generic,Preferred generic manufacturer per contract,2025-03-29,true
-OVR0014,BUYER1,ST012,98669-903-28,hydrochlorothiazide,never_generic,Avoids prior stockout pattern with alternate distributor,2025-07-30,true
-OVR0015,BUYER3,ST007,89846-334-30,prednisone,never_generic,Store-level insurance mix favors this NDC,2025-08-19,true
-OVR0016,BUYER2,ALL_STORES,50582-567-88,escitalopram,always_secondary_source,Avoids prior stockout pattern with alternate distributor,2025-06-09,false
-OVR0017,BUYER4,ALL_STORES,60832-765-93,alprazolam,custom_par_level,Historical adverse substitution feedback,2025-02-21,true
-OVR0018,BUYER3,ST003,65749-587-96,furosemide,never_generic,Historical adverse substitution feedback,2025-08-21,false
-OVR0019,BUYER4,ALL_STORES,23998-570-66,sertraline,never_substitute,Pharmacist-in-charge clinical preference,2024-05-01,true
-OVR0020,BUYER3,ST001,34066-578-95,alprazolam,custom_par_level,Patient continuity of care preference from PIC,2025-01-05,true
-OVR0021,BUYER1,ST003,62110-787-10,atorvastatin,preferred_distributor,Preferred generic manufacturer per contract,2024-04-28,true
-OVR0022,BUYER1,ST001,37375-352-44,omeprazole,custom_par_level,Store-level insurance mix favors this NDC,2024-03-03,false
-OVR0023,BUYER4,ALL_STORES,90668-999-26,cetirizine,custom_par_level,Historical adverse substitution feedback,2024-09-11,false
-OVR0024,BUYER2,ALL_STORES,62120-747-62,simvastatin,always_secondary_source,Avoids prior stockout pattern with alternate distributor,2025-05-25,true
-OVR0025,BUYER4,ST008,81651-620-32,ondansetron,custom_par_level,Patient continuity of care preference from PIC,2025-02-21,true
-OVR0026,BUYER4,ST009,90846-140-15,bupropion XL,always_secondary_source,Avoids prior stockout pattern with alternate distributor,2024-05-08,true
-OVR0027,BUYER1,ALL_STORES,16711-556-42,insulin glargine,custom_par_level,Preferred generic manufacturer per contract,2025-08-05,true
-OVR0028,BUYER2,ST005,10080-227-35,albuterol HFA,custom_par_level,Preferred generic manufacturer per contract,2024-12-31,true
-OVR0029,BUYER3,ST003,96886-346-29,rivaroxaban,always_secondary_source,Preferred generic manufacturer per contract,2025-08-06,true
-OVR0030,BUYER2,ALL_STORES,37035-873-18,ciprofloxacin,never_substitute,Store-level insurance mix favors this NDC,2025-02-27,true
-OVR0031,BUYER3,ST003,66326-727-83,fluticasone/salmeterol,custom_par_level,Preferred generic manufacturer per contract,2024-03-22,true
-OVR0032,BUYER1,ALL_STORES,91352-596-81,amoxicillin,always_secondary_source,Avoids prior stockout pattern with alternate distributor,2025-11-10,true
-OVR0033,BUYER4,ST010,25095-188-55,omeprazole,preferred_distributor,Patient continuity of care preference from PIC,2025-06-24,true
-OVR0034,BUYER1,ALL_STORES,40485-660-43,fluticasone nasal spray,preferred_distributor,Avoids prior stockout pattern with alternate distributor,2024-01-03,true
-OVR0035,BUYER3,ALL_STORES,94380-365-11,lisdexamfetamine,never_substitute,Avoids prior stockout pattern with alternate distributor,2024-01-09,false
-OVR0036,BUYER2,ALL_STORES,37035-873-18,ciprofloxacin,always_secondary_source,Store-level insurance mix favors this NDC,2024-02-20,true
-OVR0037,BUYER4,ST007,75142-666-42,ondansetron,always_secondary_source,Store-level insurance mix favors this NDC,2025-05-10,true
-OVR0038,BUYER4,ST001,83963-779-88,metoprolol succinate ER,always_secondary_source,Preferred generic manufacturer per contract,2025-10-03,false
-OVR0039,BUYER4,ALL_STORES,73903-957-64,methylphenidate ER,never_generic,Pharmacist-in-charge clinical preference,2024-05-26,true
-OVR0040,BUYER2,ST006,96981-253-27,metformin,preferred_distributor,Avoids prior stockout pattern with alternate distributor,2025-11-11,true
-OVR0041,BUYER4,ALL_STORES,26214-438-52,azithromycin,never_generic,Historical adverse substitution feedback,2024-07-26,true
-OVR0042,BUYER1,ALL_STORES,32223-787-20,furosemide,preferred_distributor,Historical adverse substitution feedback,2024-04-20,true
-OVR0043,BUYER1,ST005,69484-331-81,sertraline,never_generic,Preferred generic manufacturer per contract,2024-04-30,true
-OVR0044,BUYER2,ALL_STORES,29879-693-24,gabapentin,custom_par_level,Patient continuity of care preference from PIC,2024-11-02,true
-OVR0045,BUYER1,ST007,82408-727-65,clopidogrel,never_generic,Patient continuity of care preference from PIC,2024-09-13,true
-OVR0046,BUYER3,ST006,66224-882-23,amphetamine/dextroamphetamine,custom_par_level,Pharmacist-in-charge clinical preference,2025-10-29,true
-OVR0047,BUYER4,ALL_STORES,91352-596-81,amoxicillin,preferred_distributor,Avoids prior stockout pattern with alternate distributor,2024-06-12,true
-OVR0048,BUYER3,ST005,92876-924-46,montelukast,custom_par_level,Preferred generic manufacturer per contract,2025-06-03,true
-OVR0049,BUYER4,ALL_STORES,76766-852-95,fluticasone/salmeterol,always_secondary_source,Avoids prior stockout pattern with alternate distributor,2025-05-08,true
-OVR0050,BUYER1,ALL_STORES,40271-288-94,bupropion XL,custom_par_level,Historical adverse substitution feedback,2024-08-20,true
-OVR0051,BUYER1,ALL_STORES,77547-855-65,metformin,never_substitute,Historical adverse substitution feedback,2025-10-13,true
-OVR0052,BUYER2,ST008,13900-655-46,duloxetine,preferred_distributor,Historical adverse substitution feedback,2024-12-13,true
-OVR0053,BUYER3,ALL_STORES,24669-197-68,tamsulosin,never_substitute,Pharmacist-in-charge clinical preference,2025-11-15,true
-OVR0054,BUYER3,ALL_STORES,59899-705-80,tirzepatide,preferred_distributor,Pharmacist-in-charge clinical preference,2024-08-18,true
-OVR0055,BUYER1,ALL_STORES,62982-550-93,alprazolam,never_substitute,Historical adverse substitution feedback,2024-07-05,true
-OVR0056,BUYER3,ST008,96886-346-29,rivaroxaban,never_generic,Pharmacist-in-charge clinical preference,2025-01-03,true
-OVR0057,BUYER3,ST012,37559-713-63,amlodipine,never_generic,Preferred generic manufacturer per contract,2025-02-11,true
-OVR0065,BUYER1,ST012,59315-796-34,pantoprazole,preferred_distributor,Pharmacist-in-charge clinical preference,2025-11-05,false
-OVR0067,BUYER4,ST007,21059-230-80,alprazolam,always_secondary_source,Store-level insurance mix favors this NDC,2024-02-11,true
-OVR0070,BUYER4,ALL_STORES,62120-747-62,simvastatin,never_generic,Preferred generic manufacturer per contract,2024-12-24,true
+OVR0001,BUYER2,ALL_STORES,89730-565-25,methotrexate,custom_par_level,Pharmacist-in-charge clinical preference,2025-09-10,true
+OVR0002,BUYER2,ST008,28307-336-11,semaglutide,always_secondary_source,Avoids prior stockout pattern with alternate distributor,2025-05-12,true
+OVR0003,BUYER2,ST008,87807-177-51,clonazepam,never_generic,Preferred generic manufacturer per contract,2025-06-24,false
+OVR0004,BUYER4,ST002,58181-179-41,amphetamine/dextroamphetamine,preferred_distributor,Patient continuity of care preference from PIC,2024-09-13,true
+OVR0005,BUYER4,ALL_STORES,93804-488-39,rosuvastatin,custom_par_level,Preferred generic manufacturer per contract,2025-03-17,true
+OVR0006,BUYER2,ST002,77252-823-92,insulin lispro,always_secondary_source,Preferred generic manufacturer per contract,2025-04-04,true
+OVR0007,BUYER2,ALL_STORES,74944-895-86,levothyroxine,never_generic,Patient continuity of care preference from PIC,2025-09-22,true
+OVR0008,BUYER3,ALL_STORES,87946-273-95,adalimumab,custom_par_level,Preferred generic manufacturer per contract,2025-06-24,true
+OVR0009,BUYER1,ALL_STORES,42942-986-15,oxycodone,always_secondary_source,Pharmacist-in-charge clinical preference,2026-05-15,true
+OVR0010,BUYER2,ALL_STORES,30516-676-89,fluticasone/salmeterol,never_substitute,Avoids prior stockout pattern with alternate distributor,2025-07-20,true
+OVR0011,BUYER3,ST004,74461-609-96,semaglutide,always_secondary_source,Store-level insurance mix favors this NDC,2026-08-10,false
+OVR0012,BUYER2,ST007,25256-369-93,furosemide,never_generic,Avoids prior stockout pattern with alternate distributor,2026-02-13,true
+OVR0013,BUYER3,ST011,25095-188-55,omeprazole,custom_par_level,Historical adverse substitution feedback,2025-06-30,true
+OVR0014,BUYER1,ALL_STORES,69643-267-49,hydrocodone/acetaminophen,never_substitute,Pharmacist-in-charge clinical preference,2024-03-29,true
+OVR0015,BUYER3,ST008,66326-727-83,fluticasone/salmeterol,never_substitute,Avoids prior stockout pattern with alternate distributor,2025-08-07,true
+OVR0016,BUYER2,ALL_STORES,90257-312-26,insulin lispro,always_secondary_source,Store-level insurance mix favors this NDC,2025-01-31,true
+OVR0017,BUYER2,ALL_STORES,54246-425-51,zolpidem,preferred_distributor,Preferred generic manufacturer per contract,2026-05-18,true
+OVR0018,BUYER2,ST003,67822-244-46,fluticasone nasal spray,never_substitute,Patient continuity of care preference from PIC,2026-08-18,false
+OVR0019,BUYER4,ST006,58270-597-14,hydrocodone/acetaminophen,preferred_distributor,Avoids prior stockout pattern with alternate distributor,2024-10-14,true
+OVR0020,BUYER1,ALL_STORES,34354-408-33,cetirizine,never_generic,Pharmacist-in-charge clinical preference,2026-07-02,true
+OVR0021,BUYER2,ALL_STORES,25095-188-55,omeprazole,preferred_distributor,Avoids prior stockout pattern with alternate distributor,2025-03-30,true
+OVR0022,BUYER2,ST004,25440-367-99,semaglutide,never_generic,Historical adverse substitution feedback,2025-03-07,true
+OVR0023,BUYER2,ST006,98669-903-28,hydrochlorothiazide,never_substitute,Preferred generic manufacturer per contract,2025-08-14,true
+OVR0024,BUYER2,ST007,82443-922-16,ciprofloxacin,never_generic,Historical adverse substitution feedback,2024-01-08,true
+OVR0025,BUYER4,ST007,81273-586-56,fluticasone nasal spray,custom_par_level,Avoids prior stockout pattern with alternate distributor,2025-04-30,true
+OVR0026,BUYER1,ALL_STORES,26764-444-47,insulin glargine,never_substitute,Avoids prior stockout pattern with alternate distributor,2026-04-01,false
+OVR0027,BUYER4,ALL_STORES,46260-667-32,methotrexate,always_secondary_source,Patient continuity of care preference from PIC,2025-09-20,true
+OVR0028,BUYER3,ALL_STORES,33113-534-54,fluticasone/salmeterol,preferred_distributor,Store-level insurance mix favors this NDC,2026-08-03,true
+OVR0029,BUYER2,ST005,94206-196-21,cetirizine,never_generic,Avoids prior stockout pattern with alternate distributor,2026-08-17,true
+OVR0030,BUYER4,ALL_STORES,35925-784-33,adalimumab,never_generic,Historical adverse substitution feedback,2024-02-24,true
+OVR0031,BUYER4,ALL_STORES,72561-808-57,warfarin,always_secondary_source,Preferred generic manufacturer per contract,2024-02-01,true
+OVR0032,BUYER4,ST011,14061-448-12,hydrochlorothiazide,never_generic,Pharmacist-in-charge clinical preference,2024-07-09,true
+OVR0033,BUYER2,ALL_STORES,77158-699-84,amlodipine,always_secondary_source,Patient continuity of care preference from PIC,2024-03-07,true
+OVR0034,BUYER3,ALL_STORES,36815-617-73,lisinopril,custom_par_level,Patient continuity of care preference from PIC,2024-09-27,true
+OVR0035,BUYER2,ALL_STORES,58270-597-14,hydrocodone/acetaminophen,always_secondary_source,Historical adverse substitution feedback,2024-01-07,true
+OVR0036,BUYER4,ST008,85019-372-12,hydrocodone/acetaminophen,custom_par_level,Store-level insurance mix favors this NDC,2024-11-03,false
+OVR0037,BUYER1,ALL_STORES,37035-873-18,ciprofloxacin,preferred_distributor,Preferred generic manufacturer per contract,2024-04-21,true
+OVR0038,BUYER2,ST010,50582-567-88,escitalopram,custom_par_level,Preferred generic manufacturer per contract,2026-04-10,true
+OVR0039,BUYER2,ST002,67719-320-26,azithromycin,never_generic,Patient continuity of care preference from PIC,2024-10-06,false
+OVR0040,BUYER2,ST009,75142-666-42,ondansetron,custom_par_level,Store-level insurance mix favors this NDC,2024-01-17,true
+OVR0041,BUYER1,ALL_STORES,25095-188-55,omeprazole,preferred_distributor,Historical adverse substitution feedback,2026-05-10,true
+OVR0042,BUYER3,ST002,31464-369-35,tirzepatide,preferred_distributor,Store-level insurance mix favors this NDC,2024-02-03,true
+OVR0043,BUYER1,ST002,74214-798-49,ciprofloxacin,custom_par_level,Pharmacist-in-charge clinical preference,2025-12-26,false
+OVR0044,BUYER3,ST007,16711-556-42,insulin glargine,never_substitute,Preferred generic manufacturer per contract,2026-04-15,true
+OVR0045,BUYER1,ST012,35915-204-43,azithromycin,always_secondary_source,Preferred generic manufacturer per contract,2025-05-06,true
+OVR0046,BUYER2,ALL_STORES,81651-620-32,ondansetron,always_secondary_source,Avoids prior stockout pattern with alternate distributor,2026-05-03,true
+OVR0047,BUYER2,ALL_STORES,25373-229-24,rosuvastatin,never_substitute,Patient continuity of care preference from PIC,2026-07-26,true
+OVR0048,BUYER1,ST012,49292-930-42,rivaroxaban,never_generic,Historical adverse substitution feedback,2026-05-07,true
+OVR0049,BUYER1,ST012,43925-318-87,oxycodone,always_secondary_source,Store-level insurance mix favors this NDC,2025-12-04,true
+OVR0050,BUYER1,ST012,72186-828-29,insulin glargine,always_secondary_source,Pharmacist-in-charge clinical preference,2025-02-19,true
+OVR0053,BUYER1,ST003,26214-438-52,azithromycin,custom_par_level,Historical adverse substitution feedback,2024-05-08,false
+OVR0057,BUYER4,ALL_STORES,17441-245-97,warfarin,always_secondary_source,Avoids prior stockout pattern with alternate distributor,2026-03-10,true
+OVR0061,BUYER3,ALL_STORES,26764-444-47,insulin glargine,custom_par_level,Store-level insurance mix favors this NDC,2026-03-02,true
+OVR0062,BUYER2,ALL_STORES,34354-408-33,cetirizine,never_generic,Pharmacist-in-charge clinical preference,2025-06-29,true
+OVR0070,BUYER3,ALL_STORES,85019-372-12,hydrocodone/acetaminophen,never_generic,Avoids prior stockout pattern with alternate distributor,2024-02-02,true

@@ -35,7 +35,7 @@ Whichever is active, `ctx.shortages` ends up in the exact same shape either way 
 
 ## 2. The shortage list — synthetic mode (default)
 
-From `loader.js`. The synthetic dataset's internal clock ends 2025-12-30, so most of its 10 shortage events had already "resolved" by that date — only 1 was genuinely `Current`. To make the page demoable, the loader **relabels up to 5 events as `Current`**: the one real current event, plus the most recently-reported resolved ones (sorted by `dateReported` descending, filling up to 5 total). This is not hidden — each relabeled entry carries `demoStatusOverride: true` in the raw API response (not currently surfaced in the UI itself).
+From `loader.js`. The synthetic dataset's internal clock ends 2026-08-21, and by chance all 20 of its shortage events had already "resolved" by then — none are genuinely `Current`. To make the page demoable, the loader **relabels up to 5 events as `Current`**: any genuinely current ones (if the regenerated data ever produces some) plus the most recently-reported resolved ones (sorted by `dateReported` descending, filling up to 5 total). This is not hidden — each relabeled entry carries `demoStatusOverride: true` in the raw API response (not currently surfaced in the UI itself).
 
 Fields, straight from the CSV, unmodified:
 

@@ -1,61 +1,61 @@
 ndc,generic_name,brand_name,is_brand,therapeutic_category,dosage_form,strength,pack_size,dea_schedule,orange_book_te_code,manufacturer,velocity_tier,is_glp1,is_insulin,is_controlled_substance,is_340b_eligible,wac_price_per_pack,unit_cost_per_pack,ndc_directory_active
-62110-787-10,atorvastatin,,false,Statins/Cardiovascular,tablet,25mg,90,0,AB,Teva,A,false,false,false,false,9.76,6.93,true
-37559-713-63,amlodipine,,false,Antihypertensive,tablet,20mg,90,0,AB,Lupin,A,false,false,false,false,3.91,3.13,true
-59428-765-88,amlodipine,,false,Antihypertensive,tablet,10mg,60,0,AB,Amneal,A,false,false,false,false,2.35,1.79,true
-83963-779-88,metoprolol succinate ER,,false,Antihypertensive,tablet,50mg,90,0,AB,Aurobindo,B,false,false,false,false,5.29,3.65,true
-25443-741-74,metoprolol succinate ER,,false,Antihypertensive,tablet,25mg,30,0,AB,Lupin,B,false,false,false,false,2.35,1.39,true
-35129-243-96,losartan,Cozaar,true,Antihypertensive,tablet,40mg,90,0,AB,Cozaar Pharma Inc.,A,false,false,false,false,18,14.76,true
-77547-855-65,metformin,Glucophage,true,Diabetes,tablet,5mg,30,0,AB,Glucophage Pharma Inc.,A,false,false,false,false,3,2.37,true
-96981-253-27,metformin,Glucophage,true,Diabetes,tablet,10mg,90,0,AB,Glucophage Pharma Inc.,A,false,false,false,false,9,5.31,true
+93804-488-39,rosuvastatin,,false,Statins/Cardiovascular,tablet,40mg,60,0,AB,Aurobindo,A,false,false,false,false,12.87,7.34,true
+25373-229-24,rosuvastatin,,false,Statins/Cardiovascular,tablet,50mg,60,0,AB,Mylan/Viatris,A,false,false,false,false,11.55,7.51,true
+36815-617-73,lisinopril,Prinivil,true,Antihypertensive,tablet,50mg,30,0,AB,Prinivil Pharma Inc.,A,false,false,false,true,3.6,2.16,true
+77158-699-84,amlodipine,Norvasc,true,Antihypertensive,tablet,25mg,30,0,AB,Norvasc Pharma Inc.,A,false,false,false,true,4.2,2.9,true
+60063-448-33,metformin,,false,Diabetes,tablet,5mg,60,0,AB,Lupin,A,false,false,false,true,2.22,1.38,true
+74461-609-96,semaglutide,,false,GLP-1/Diabetes,injectable pen,0.25mg,60,0,NA,Amneal,A,true,false,false,true,12540,9781.2,true
 28307-336-11,semaglutide,,false,GLP-1/Weight-Loss,injectable pen,2mg,90,0,NA,Aurobindo,A,true,false,false,false,21870,16621.2,true
+25440-367-99,semaglutide,,false,GLP-1/Weight-Loss,injectable pen,2mg,90,0,NA,Sandoz,A,true,false,false,true,38880,24883.2,true
+31464-369-35,tirzepatide,,false,GLP-1/Diabetes,injectable pen,0.25mg,90,0,NA,Aurobindo,A,true,false,false,false,36855,21007.35,true
 59899-705-80,tirzepatide,,false,GLP-1/Diabetes,injectable pen,2mg,60,0,NA,Mylan/Viatris,A,true,false,false,true,18900,13986,true
 72186-828-29,insulin glargine,Lantus,true,Insulin,injectable vial,100units/mL,60,0,NA,Lantus Pharma Inc.,B,false,true,false,false,16800,11928,true
+26764-444-47,insulin glargine,Lantus,true,Insulin,injectable vial,100units/mL,60,0,NA,Lantus Pharma Inc.,B,false,true,false,false,16800,9576,true
 16711-556-42,insulin glargine,Lantus,true,Insulin,injectable vial,10mL vial,30,0,NA,Lantus Pharma Inc.,B,false,true,false,true,8400,6468,true
+77252-823-92,insulin lispro,,false,Insulin,injectable vial,100units/mL,90,0,NA,Lupin,B,false,true,false,false,5148,3706.56,true
+90257-312-26,insulin lispro,Humalog,true,Insulin,injectable vial,10mL vial,90,0,NA,Humalog Pharma Inc.,B,false,true,false,false,23400,12870,true
 57137-519-83,levothyroxine,Synthroid,true,Thyroid,tablet,20mg,60,0,BX,Synthroid Pharma Inc.,A,false,false,false,false,10.8,8.75,true
-37375-352-44,omeprazole,,false,GI/PPI,capsule,30mg,60,0,AB,Amneal,A,false,false,false,true,3.06,2.36,true
+74944-895-86,levothyroxine,Synthroid,true,Thyroid,tablet,5mg,90,0,BX,Synthroid Pharma Inc.,A,false,false,false,false,16.2,10.21,true
 25095-188-55,omeprazole,Prilosec,true,GI/PPI,capsule,10mg,60,0,AB,Prilosec Pharma Inc.,A,false,false,false,false,9,5.85,true
-59315-796-34,pantoprazole,,false,GI/PPI,tablet,10mg,90,0,AB,Aurobindo,B,false,false,false,true,5.35,3.26,true
-90471-917-54,pantoprazole,Protonix,true,GI/PPI,tablet,20mg,90,0,AB,Protonix Pharma Inc.,B,false,false,false,true,19.8,13.46,true
-69484-331-81,sertraline,Zoloft,true,Antidepressant,tablet,50mg,90,0,AB,Zoloft Pharma Inc.,A,false,false,false,false,14.4,9.5,true
-23998-570-66,sertraline,,false,Antidepressant,tablet,20mg,60,0,AB,Aurobindo,A,false,false,false,false,3.46,2.18,true
 50582-567-88,escitalopram,,false,Antidepressant,tablet,50mg,90,0,AB,Amneal,B,false,false,false,true,7.99,5.19,true
-90846-140-15,bupropion XL,Wellbutrin XL,true,Antidepressant,tablet,20mg,30,0,AB,Wellbutrin Pharma Inc.,B,false,false,false,true,9,4.95,true
-40271-288-94,bupropion XL,,false,Antidepressant,tablet,40mg,90,0,AB,Aurobindo,B,false,false,false,true,4.86,3.6,true
-62982-550-93,alprazolam,,false,Anxiolytic,tablet,50mg,90,4,AB,Sandoz,B,false,false,true,true,4.96,3.72,true
-34066-578-95,alprazolam,,false,Anxiolytic,tablet,50mg,90,4,AB,Aurobindo,B,false,false,true,false,5.81,4.82,true
-60832-765-93,alprazolam,Xanax,true,Anxiolytic,tablet,25mg,60,4,AB,Xanax Pharma Inc.,B,false,false,true,false,11.4,8.09,true
-21059-230-80,alprazolam,,false,Anxiolytic,tablet,40mg,30,4,AB,Aurobindo,B,false,false,true,false,2.05,1.54,true
-66224-882-23,amphetamine/dextroamphetamine,Adderall,true,ADHD/Stimulant,tablet,5mg,90,2,AB,Adderall Pharma Inc.,B,false,false,true,true,45,34.65,true
+87807-177-51,clonazepam,Klonopin,true,Anxiolytic,tablet,20mg,60,4,AB,Klonopin Pharma Inc.,C,false,false,true,false,12.6,10.21,true
+54246-425-51,zolpidem,,false,Sleep Aid,tablet,25mg,60,4,AB,Mylan/Viatris,C,false,false,true,false,3.3,2.64,true
+43925-318-87,oxycodone,,false,Opioid Analgesic,tablet,10mg,60,2,NA,Mylan/Viatris,C,false,false,true,true,18.72,13.48,true
+39879-392-11,oxycodone,OxyContin,true,Opioid Analgesic,tablet,50mg,30,2,NA,OxyContin Pharma Inc.,C,false,false,true,true,36,21.24,true
+42942-986-15,oxycodone,,false,Opioid Analgesic,tablet,40mg,30,2,NA,Amneal,C,false,false,true,false,10.08,7.56,true
+85019-372-12,hydrocodone/acetaminophen,,false,Opioid Analgesic,tablet,25mg,90,2,NA,Teva,B,false,false,true,false,10.53,6.32,true
+69643-267-49,hydrocodone/acetaminophen,,false,Opioid Analgesic,tablet,20mg,90,2,NA,Mylan/Viatris,B,false,false,true,false,15.8,11.06,true
+58270-597-14,hydrocodone/acetaminophen,Norco,true,Opioid Analgesic,tablet,5mg,60,2,NA,Norco Pharma Inc.,B,false,false,true,true,27,15.66,true
+31628-407-85,hydrocodone/acetaminophen,,false,Opioid Analgesic,tablet,20mg,90,2,NA,Amneal,B,false,false,true,false,12.96,9.33,true
 58181-179-41,amphetamine/dextroamphetamine,,false,ADHD/Stimulant,tablet,25mg,90,2,AB,Lupin,B,false,false,true,false,14.85,11.14,true
 73903-957-64,methylphenidate ER,Concerta,true,ADHD/Stimulant,tablet,40mg,60,2,AB,Concerta Pharma Inc.,B,false,false,true,false,39,24.18,true
-62924-796-96,methylphenidate ER,,false,ADHD/Stimulant,tablet,5mg,90,2,AB,Amneal,B,false,false,true,true,12.87,7.72,true
-94380-365-11,lisdexamfetamine,,false,ADHD/Stimulant,capsule,40mg,30,2,NA,Amneal,B,false,false,true,false,7.87,6.37,true
 91775-889-68,lisdexamfetamine,,false,ADHD/Stimulant,capsule,40mg,90,2,NA,Mylan/Viatris,B,false,false,true,false,12.15,9.48,true
 83032-760-78,amoxicillin,,false,Antibiotic,capsule,30mg,90,0,AB,Amneal,A,false,false,false,true,2.66,1.57,true
-91352-596-81,amoxicillin,Amoxil,true,Antibiotic,capsule,20mg,90,0,AB,Amoxil Pharma Inc.,A,false,false,false,false,7.2,4.25,true
 26214-438-52,azithromycin,,false,Antibiotic,tablet,20mg,60,0,AB,Teva,A,false,false,false,true,4.86,3.01,true
+67719-320-26,azithromycin,Zithromax,true,Antibiotic,tablet,25mg,60,0,AB,Zithromax Pharma Inc.,A,false,false,false,false,18,10.62,true
+35915-204-43,azithromycin,,false,Antibiotic,tablet,5mg,60,0,AB,Lupin,A,false,false,false,false,2.88,2.33,true
 37035-873-18,ciprofloxacin,,false,Antibiotic,tablet,40mg,30,0,AB,Aurobindo,B,false,false,false,false,1.67,1.15,true
+82443-922-16,ciprofloxacin,Cipro,true,Antibiotic,tablet,20mg,90,0,AB,Cipro Pharma Inc.,B,false,false,false,false,16.2,10.69,true
+74214-798-49,ciprofloxacin,,false,Antibiotic,tablet,25mg,90,0,AB,Teva,B,false,false,false,false,5.67,4.14,true
 70781-158-58,oseltamivir,,false,Antiviral,capsule,20mg,90,0,AB,Lupin,B,false,false,false,false,75.6,58.97,true
-90668-999-26,cetirizine,Zyrtec,true,Antihistamine/OTC,tablet,50mg,30,0,AB,Zyrtec Pharma Inc.,A,false,false,false,true,2.7,1.65,true
-40485-660-43,fluticasone nasal spray,Flonase,true,Antihistamine/OTC,nasal spray,50mcg/spray,90,0,AT,Flonase Pharma Inc.,B,false,false,false,true,495,356.4,true
+34354-408-33,cetirizine,,false,Antihistamine/OTC,tablet,20mg,90,0,AB,Amneal,A,false,false,false,false,1.7,1.07,true
+94206-196-21,cetirizine,,false,Antihistamine/OTC,tablet,5mg,30,0,AB,Sandoz,A,false,false,false,false,0.78,0.56,true
 81273-586-56,fluticasone nasal spray,Flonase,true,Antihistamine/OTC,nasal spray,50mcg/spray,90,0,AT,Flonase Pharma Inc.,B,false,false,false,true,495,405.9,true
-74395-984-69,fluticasone nasal spray,,false,Antihistamine/OTC,nasal spray,50mcg/spray,60,0,AT,Aurobindo,B,false,false,false,false,59.4,43.96,true
-10080-227-35,albuterol HFA,,false,Respiratory/Inhaler,inhaler,90mcg/inh,30,0,NA,Teva,A,false,false,false,false,243.6,143.72,true
+67822-244-46,fluticasone nasal spray,Flonase,true,Antihistamine/OTC,nasal spray,50mcg/spray,30,0,AT,Flonase Pharma Inc.,B,false,false,false,true,165,102.3,true
 92126-761-19,albuterol HFA,,false,Respiratory/Inhaler,inhaler,90mcg/inh,60,0,NA,Sandoz,A,false,false,false,true,588,452.76,true
+33113-534-54,fluticasone/salmeterol,,false,Respiratory/Inhaler,inhaler,108mcg/inh,30,0,NA,Amneal,B,false,false,false,false,1260,793.8,true
+30516-676-89,fluticasone/salmeterol,,false,Respiratory/Inhaler,inhaler,90mcg/inh,60,0,NA,Aurobindo,B,false,false,false,false,2898,2231.46,true
 66326-727-83,fluticasone/salmeterol,,false,Respiratory/Inhaler,inhaler,90mcg/inh,60,0,NA,Amneal,B,false,false,false,false,4662,3076.92,true
-76766-852-95,fluticasone/salmeterol,Advair Diskus,true,Respiratory/Inhaler,inhaler,90mcg/inh,30,0,NA,Advair Pharma Inc.,B,false,false,false,false,6300,4032,true
-92876-924-46,montelukast,,false,Respiratory,tablet,50mg,30,0,AB,Mylan/Viatris,B,false,false,false,false,1.18,0.84,true
-97439-527-58,apixaban,Eliquis,true,Anticoagulant,tablet,25mg,90,0,NA,Eliquis Pharma Inc.,A,false,false,false,true,522,428.04,true
-96886-346-29,rivaroxaban,,false,Anticoagulant,tablet,50mg,90,0,NA,Teva,B,false,false,false,true,115.92,70.71,true
-29879-693-24,gabapentin,Neurontin,true,Neuro/Pain,capsule,20mg,90,0,AB,Neurontin Pharma Inc.,A,false,false,false,true,9.9,6.53,true
-13900-655-46,duloxetine,,false,Antidepressant/Pain,capsule,10mg,30,0,AB,Amneal,B,false,false,false,false,2.02,1.54,true
+72561-808-57,warfarin,Coumadin,true,Anticoagulant,tablet,40mg,30,0,AB,Coumadin Pharma Inc.,B,false,false,false,true,6,4.32,true
+17441-245-97,warfarin,,false,Anticoagulant,tablet,25mg,30,0,AB,Mylan/Viatris,B,false,false,false,false,1.68,1.19,true
+46128-701-32,apixaban,Eliquis,true,Anticoagulant,tablet,25mg,60,0,NA,Eliquis Pharma Inc.,A,false,false,false,true,348,215.76,true
+49292-930-42,rivaroxaban,,false,Anticoagulant,tablet,40mg,60,0,NA,Mylan/Viatris,B,false,false,false,false,107.52,81.72,true
+14061-448-12,hydrochlorothiazide,Microzide,true,Antihypertensive,tablet,50mg,30,0,AB,Microzide Pharma Inc.,A,false,false,false,false,2.1,1.72,true
 98669-903-28,hydrochlorothiazide,Microzide,true,Antihypertensive,tablet,10mg,60,0,AB,Microzide Pharma Inc.,A,false,false,false,true,4.2,3.44,true
-62120-747-62,simvastatin,Zocor,true,Statins/Cardiovascular,tablet,25mg,60,0,AB,Zocor Pharma Inc.,B,false,false,false,true,7.8,6.4,true
-82408-727-65,clopidogrel,Plavix,true,Antiplatelet,tablet,5mg,60,0,AB,Plavix Pharma Inc.,B,false,false,false,false,21,13.23,true
-65749-587-96,furosemide,,false,Diuretic,tablet,50mg,30,0,AB,Lupin,B,false,false,false,false,0.29,0.24,true
-32223-787-20,furosemide,,false,Diuretic,tablet,10mg,30,0,AB,Mylan/Viatris,B,false,false,false,false,0.34,0.19,true
-89846-334-30,prednisone,,false,Corticosteroid,tablet,5mg,30,0,AB,Sandoz,B,false,false,false,false,0.62,0.49,true
-24669-197-68,tamsulosin,Flomax,true,Urology,capsule,30mg,60,0,AB,Flomax Pharma Inc.,B,false,false,false,false,11.4,7.3,true
+25256-369-93,furosemide,,false,Diuretic,tablet,5mg,90,0,AB,Sandoz,B,false,false,false,false,2,1.18,true
 81651-620-32,ondansetron,Zofran,true,Antiemetic,tablet,10mg,90,0,AB,Zofran Pharma Inc.,C,false,false,false,true,49.5,41.09,true
 75142-666-42,ondansetron,,false,Antiemetic,tablet,20mg,60,0,AB,Aurobindo,C,false,false,false,false,7.59,5.39,true
+46260-667-32,methotrexate,Trexall,true,Oncology/Rheum (specialty),tablet,10mg,90,0,NA,Trexall Pharma Inc.,C,false,false,false,true,162,115.02,true
+89730-565-25,methotrexate,Trexall,true,Oncology/Rheum (specialty),tablet,40mg,30,0,NA,Trexall Pharma Inc.,C,false,false,false,false,54,35.64,true
+87946-273-95,adalimumab,Humira,true,Biologic/Specialty,injectable pen,2.4mg,30,0,NA,Humira Pharma Inc.,C,false,false,false,true,87000,57420,true
 35925-784-33,adalimumab,Humira,true,Biologic/Specialty,injectable pen,0.25mg,90,0,NA,Humira Pharma Inc.,C,false,false,false,false,261000,211410,true

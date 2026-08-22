@@ -94,9 +94,9 @@ const counts = {
   fda_ashp_shortage_events: writeFilteredCsvRobust('fda_ashp_shortage_events.csv', r => demoNdcSet.has(r.ndc)),
   substitution_events: writeFilteredCsvRobust('substitution_events.csv', r => demoNdcSet.has(r.original_ndc)),
   buyer_overrides: writeFilteredCsvRobust('buyer_overrides.csv', r => demoNdcSet.has(r.ndc)),
-  // Same 150-day window loader.js itself uses (minDate: '2025-08-01') — kept in sync
+  // Same 150-day window loader.js itself uses (minDate: '2026-03-24') — kept in sync
   // manually since this script pre-computes what loader.js would otherwise filter live.
-  dispense_history: writeFilteredCsvFast('dispense_history.csv', r => storeSet.has(r.store_id) && demoNdcSet.has(r.ndc) && r.date >= '2025-08-01'),
+  dispense_history: writeFilteredCsvFast('dispense_history.csv', r => storeSet.has(r.store_id) && demoNdcSet.has(r.ndc) && r.date >= '2026-03-24'),
   inventory_snapshot_weekly: writeFilteredCsvFast('inventory_snapshot_weekly.csv', r => storeSet.has(r.store_id) && demoNdcSet.has(r.ndc)),
 };
 

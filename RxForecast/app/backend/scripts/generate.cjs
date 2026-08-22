@@ -253,10 +253,19 @@ writeCSV('distributor_contracts.csv',
 // 5. FDA / ASHP SHORTAGE EVENTS  (pick a handful of NDCs to go short)
 // =========================================================
 const shortageNdcs = [];
+// 20 drugs (up from 10) spanning a wider mix of DEA schedules (0/2/4), TE-code classes, and
+// therapeutic categories — deliberately broader coverage than a minimal demo needs, so the
+// substitution_events this produces (see §8 below) form a more useful eval-harness dataset:
+// more cases, and more variety in the scenarios an eval would need to score (e.g. Schedule
+// II shortages with no substitute path at all, narrow-therapeutic-index drugs, everyday
+// high-volume generics vs. specialty/biologic).
 const shortageDrugsWanted = [
   'semaglutide', 'tirzepatide', 'amphetamine/dextroamphetamine', 'amoxicillin',
   'albuterol HFA', 'lisdexamfetamine', 'insulin glargine', 'methylphenidate ER',
   'oseltamivir', 'adalimumab',
+  'insulin lispro', 'azithromycin', 'fluticasone/salmeterol', 'apixaban',
+  'hydrocodone/acetaminophen', 'oxycodone', 'clonazepam', 'levothyroxine',
+  'metformin', 'warfarin',
 ];
 for (const g of shortageDrugsWanted) {
   const candidates = formulary.filter(f => f.generic_name === g);
@@ -266,7 +275,9 @@ const SHORTAGE_REASONS = ['Manufacturing delay', 'Demand increase for the drug',
 const shortageEvents = [];
 let shortageSeq = 1;
 const SIM_START = '2024-01-01';
-const SIM_DAYS = 730; // 24 months, matches the PRD's "24 months of historical dispense data" training spec
+const SIM_DAYS = 964; // ~32 months, through 2026-08-21 — kept close to "today" so the demo's
+// trailing window doesn't go stale; exceeds the PRD's 24-month training-data spec, giving
+// headroom for backtesting once a real model replaces the trailing-average prototype forecaster
 for (const drug of shortageNdcs) {
   const startOffset = ri(30, SIM_DAYS - 60);
   const durationDays = ri(25, 120);
@@ -518,7 +529,7 @@ let subSeq = 1;
 for (const s of shortageEvents) {
   const shortDrug = formulary.find(f => f.ndc === s.ndc);
   const alternatives = formulary.filter(f => f.generic_name === shortDrug.generic_name && f.ndc !== shortDrug.ndc);
-  const nEvents = ri(6, 15);
+  const nEvents = ri(10, 25); // widened from ri(6,15) for a larger eval-label pool per shortage
   for (let i = 0; i < nEvents; i++) {
     const store = choice(stores);
     const alt = alternatives.length ? choice(alternatives) : shortDrug;

@@ -102,7 +102,7 @@ export function loadDemoData() {
   // real trailing-average forecast with a visible seasonal wobble, without loading
   // the full 24-month / 1.27M-row file into memory.
   const dispense = readFilteredSimple('dispense_history.csv', {
-    storeSet, ndcSet: demoNdcSet, minDate: '2025-08-01',
+    storeSet, ndcSet: demoNdcSet, minDate: '2026-03-24',
   }).map(d => ({
     date: d.date, storeId: d.store_id, ndc: d.ndc,
     qty: toNum(d.quantity_dispensed), daysSupply: toNum(d.days_supply), payerType: d.payer_type,
@@ -123,13 +123,13 @@ export function loadDemoData() {
     reorderPointDays: toNum(r.reorder_point_days), targetDays: toNum(r.target_days_of_supply),
   }));
 
-  // DEMO ADJUSTMENT: the synthetic dataset's internal clock ends 2025-12-30, so only 1 of
-  // its 10 shortage events is genuinely "Current" as of that date — most had already
-  // resolved. For a demo that needs to actually show the Shortage Alert Feed working,
-  // we re-present up to 5 shortages (the real Current one + the most recent Resolved
-  // ones) as active "for demo purposes" — the underlying event data (reason, severity,
-  // NDC, bulletin text) is unchanged and realistic, only the displayed status is
-  // overridden. Flagged in the API response via `demoStatusOverride`, not hidden.
+  // DEMO ADJUSTMENT: not every shortage event in the synthetic dataset is genuinely
+  // "Current" as of the dataset's internal clock end (2026-08-21) — most resolve well
+  // before then. For a demo that needs to actually show the Shortage Alert Feed working,
+  // we re-present up to 5 shortages (the real Current ones + the most recently-reported
+  // Resolved ones) as active "for demo purposes" — the underlying event data (reason,
+  // severity, NDC, bulletin text) is unchanged and realistic, only the displayed status
+  // is overridden. Flagged in the API response via `demoStatusOverride`, not hidden.
   const allShortages = shortagesRaw.filter(s => demoNdcSet.has(s.ndc)).map(s => ({
     id: s.shortage_id, ndc: s.ndc, genericName: s.generic_name, source: s.source,
     status: s.status, dateReported: s.date_reported, dateResolved: s.date_resolved,

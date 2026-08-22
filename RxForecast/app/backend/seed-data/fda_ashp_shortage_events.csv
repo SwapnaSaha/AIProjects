@@ -1,11 +1,21 @@
 shortage_id,ndc,generic_name,source,status,date_reported,date_resolved,reason,severity,bulletin_id
-SHRT0001,28307-336-11,semaglutide,FDA Drug Shortage Database,Resolved,2024-02-27,2024-05-02,Regulatory/quality issue at manufacturing site,Partial - limited manufacturers,ASHP-2024-0002
-SHRT0002,59899-705-80,tirzepatide,FDA Drug Shortage Database,Resolved,2025-01-26,2025-02-27,Regulatory/quality issue at manufacturing site,Full shortage - no supply,ASHP-2025-0003
-SHRT0003,58181-179-41,amphetamine/dextroamphetamine,FDA Drug Shortage Database,Resolved,2024-12-03,2025-01-07,Manufacturing delay,Partial - limited manufacturers,FDA-2024-0004
-SHRT0004,83032-760-78,amoxicillin,ASHP Drug Shortages,Resolved,2025-07-22,2025-09-29,Manufacturing delay,Full shortage - no supply,FDA-2025-0005
-SHRT0005,92126-761-19,albuterol HFA,FDA Drug Shortage Database,Resolved,2024-09-16,2024-10-23,Raw material shortage,Full shortage - no supply,ASHP-2024-0006
-SHRT0006,91775-889-68,lisdexamfetamine,ASHP Drug Shortages,Resolved,2024-07-25,2024-09-23,Demand increase for the drug,Partial - limited manufacturers,ASHP-2024-0007
-SHRT0007,72186-828-29,insulin glargine,ASHP Drug Shortages,Current,2025-10-25,,Demand increase for the drug,Partial - limited manufacturers,FDA-2025-0008
-SHRT0008,73903-957-64,methylphenidate ER,FDA Drug Shortage Database,Resolved,2025-06-05,2025-07-24,Manufacturing delay,Partial - allocation in place,FDA-2025-0009
-SHRT0009,70781-158-58,oseltamivir,FDA Drug Shortage Database,Resolved,2025-08-24,2025-11-30,Raw material shortage,Partial - allocation in place,ASHP-2025-0010
-SHRT0010,35925-784-33,adalimumab,ASHP Drug Shortages,Resolved,2025-08-17,2025-11-05,Raw material shortage,Partial - limited manufacturers,FDA-2025-0011
+SHRT0001,28307-336-11,semaglutide,FDA Drug Shortage Database,Resolved,2025-08-02,2025-11-03,Manufacturing delay,Partial - allocation in place,FDA-2025-0002
+SHRT0002,59899-705-80,tirzepatide,ASHP Drug Shortages,Resolved,2025-10-13,2025-11-11,Demand increase for the drug,Full shortage - no supply,FDA-2025-0003
+SHRT0003,58181-179-41,amphetamine/dextroamphetamine,FDA Drug Shortage Database,Resolved,2025-05-23,2025-06-17,Manufacturing delay,Full shortage - no supply,ASHP-2025-0004
+SHRT0004,83032-760-78,amoxicillin,FDA Drug Shortage Database,Resolved,2025-05-09,2025-08-23,Demand increase for the drug,Partial - limited manufacturers,FDA-2025-0005
+SHRT0005,92126-761-19,albuterol HFA,ASHP Drug Shortages,Resolved,2026-01-05,2026-04-14,Raw material shortage,Full shortage - no supply,FDA-2026-0006
+SHRT0006,91775-889-68,lisdexamfetamine,ASHP Drug Shortages,Resolved,2025-12-04,2026-02-04,Demand increase for the drug,Full shortage - no supply,FDA-2025-0007
+SHRT0007,72186-828-29,insulin glargine,ASHP Drug Shortages,Resolved,2024-08-09,2024-09-11,Regulatory/quality issue at manufacturing site,Partial - allocation in place,ASHP-2024-0008
+SHRT0008,73903-957-64,methylphenidate ER,ASHP Drug Shortages,Resolved,2024-10-01,2025-01-19,Raw material shortage,Partial - limited manufacturers,ASHP-2024-0009
+SHRT0009,70781-158-58,oseltamivir,FDA Drug Shortage Database,Resolved,2026-02-16,2026-03-13,Raw material shortage,Full shortage - no supply,ASHP-2026-0010
+SHRT0010,35925-784-33,adalimumab,FDA Drug Shortage Database,Resolved,2025-05-22,2025-07-16,Regulatory/quality issue at manufacturing site,Full shortage - no supply,FDA-2025-0011
+SHRT0011,77252-823-92,insulin lispro,ASHP Drug Shortages,Resolved,2025-07-12,2025-08-11,Regulatory/quality issue at manufacturing site,Full shortage - no supply,FDA-2025-0012
+SHRT0012,26214-438-52,azithromycin,FDA Drug Shortage Database,Resolved,2024-12-27,2025-02-09,Manufacturing delay,Partial - allocation in place,FDA-2024-0013
+SHRT0013,33113-534-54,fluticasone/salmeterol,FDA Drug Shortage Database,Resolved,2026-05-03,2026-07-05,Manufacturing delay,Full shortage - no supply,FDA-2026-0014
+SHRT0014,46128-701-32,apixaban,FDA Drug Shortage Database,Resolved,2025-04-20,2025-07-08,Regulatory/quality issue at manufacturing site,Full shortage - no supply,FDA-2025-0015
+SHRT0015,31628-407-85,hydrocodone/acetaminophen,ASHP Drug Shortages,Resolved,2024-04-03,2024-07-24,Manufacturing delay,Full shortage - no supply,ASHP-2024-0016
+SHRT0016,39879-392-11,oxycodone,ASHP Drug Shortages,Resolved,2026-05-05,2026-08-09,Raw material shortage,Partial - limited manufacturers,ASHP-2026-0017
+SHRT0017,87807-177-51,clonazepam,ASHP Drug Shortages,Resolved,2025-11-09,2026-01-24,Raw material shortage,Full shortage - no supply,FDA-2025-0018
+SHRT0018,57137-519-83,levothyroxine,FDA Drug Shortage Database,Resolved,2025-04-04,2025-07-16,Manufacturing delay,Partial - allocation in place,FDA-2025-0019
+SHRT0019,60063-448-33,metformin,ASHP Drug Shortages,Resolved,2024-08-24,2024-11-13,Manufacturing delay,Partial - limited manufacturers,ASHP-2024-0020
+SHRT0020,17441-245-97,warfarin,FDA Drug Shortage Database,Resolved,2024-02-24,2024-05-03,Regulatory/quality issue at manufacturing site,Partial - limited manufacturers,ASHP-2024-0021

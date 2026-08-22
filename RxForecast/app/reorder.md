@@ -20,7 +20,7 @@ Everything below is computed from four CSVs, loaded once at server boot (`loader
 | File | What it provides | Loaded as |
 |---|---|---|
 | `formulary.csv` | Drug identity, category, DEA schedule, TE code, **velocity tier (A/B/C)** | Full file, filtered to the demo's ~60-NDC trimmed set |
-| `dispense_history.csv` | Daily dispensed quantity per store/NDC | **Trailing 150 days only** (`minDate: '2025-08-01'`), filtered to demo stores/NDCs — not the full 24-month/1.27M-row file |
+| `dispense_history.csv` | Daily dispensed quantity per store/NDC | **Trailing 150 days only** (`minDate: '2026-03-24'`), filtered to demo stores/NDCs — not the full ~32-month/1.68M-row file |
 | `inventory_snapshot_weekly.csv` | On-hand qty, in-transit qty, reorder point (days), target days-of-supply, per store/NDC | Most recent snapshot per store+NDC key |
 | `fda_ashp_shortage_events.csv` | Active/resolved shortage records | Used only to compute the `shortageLinked` flag (§2) |
 
