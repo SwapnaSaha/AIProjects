@@ -57,6 +57,18 @@ Both frontend and backend run from **one Express process** in production — `se
 5. Leave environment variables unset — every optional integration (Foundry, Content Safety, the live openFDA feed) is off by default and the app runs fully without any of them; see `.env.example` in `backend/` if you want to turn one on later.
 6. Deploy. Render gives you a `https://<your-service-name>.onrender.com` URL — that's the one link to share.
 
+**[Railway](https://railway.com)** works too, and doesn't sleep on idle (usage-metered instead — see Railway's own pricing page for current free-tier terms). Uses the same build/start commands, checked into the repo as `railway.json` so you don't have to retype them:
+
+1. Sign up at railway.com and connect your GitHub account — same as Render, this is a step you do yourself.
+2. **New Project → Deploy from GitHub repo**, pick this repo.
+3. Settings → Source (or Build) → **Root Directory:** `RxForecast/app`.
+4. Settings → Build (or wherever Railway currently surfaces it) → **Config File Path:** `/RxForecast/app/railway.json` — Railway's config-as-code file does **not** follow the Root Directory path, it needs the full repo-relative path explicitly, so this is a separate field from step 3, not implied by it. Once set, it picks up `railway.json`'s build/start commands automatically.
+5. `PORT` is handled automatically — Railway injects it at runtime and `server.js` already reads `process.env.PORT`, no config needed.
+6. Environment variables optional, same as Render — leave unset for the template-fallback behavior, or add the `FOUNDRY_*` values from `backend/.env` under the **Variables** tab to enable real Foundry calls on this deployment too.
+7. Deploy. Railway gives you a `https://<service-name>.up.railway.app` URL.
+
+Not verified live against an actual Railway deployment yet (unlike the Render steps, which were written from a working reference) — if Railway's build fails to auto-detect Node at a Root Directory with no `package.json` of its own (only `frontend/` and `backend/` have one), that's the likely cause; Railway should offer an explicit Node/Nixpacks builder override in that case.
+
 ## Evals
 
 **[evals/](./evals/)** — offline eval harness for the Substitution Reasoner, scoring generated rationales against synthetic ground-truth pharmacist-appropriateness labels via Azure AI Foundry's Evaluation SDK (groundedness, relevance, and a custom appropriateness-agreement judge). See `evals/README.md` to run it — needs the same `FOUNDRY_*` credentials as the backend.
